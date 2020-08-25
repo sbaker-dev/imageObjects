@@ -19,7 +19,7 @@ class ImageObject:
         """
         inverted = cv2.bitwise_not(self.image)
         if new_image:
-            return inverted
+            return ImageObject(inverted)
         else:
             self.image = inverted
 
