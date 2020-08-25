@@ -33,6 +33,26 @@ class ImageObject:
         else:
             self.image = rgb
 
+    def colour_covert(self, new_image=False):
+        """
+        Convert image to colour
+        """
+        colour_image = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
+        if new_image:
+            return ImageObject(colour_image)
+        else:
+            self.image = colour_image
+
+    def mono_convert(self, new_image):
+        """
+        Convert to a mono channel gray image
+        """
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        if new_image:
+            return ImageObject(gray)
+        else:
+            self.image = gray
+
     def invert_image(self, new_image=False):
         """
         Invert the current image
