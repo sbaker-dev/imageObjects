@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 class ImageObject:
@@ -13,6 +14,24 @@ class ImageObject:
         cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
         cv2.imshow(window_name, self.image)
         cv2.waitKey()
+
+    def notebook_show(self, title="Image"):
+        """
+        For jupyter we don't want to create a new image, and instead want to show an image via matplotlib.
+        """
+        plt.imshow(self.bgr_to_rgb(new_image=True).image)
+        plt.title(title)
+        plt.show()
+
+    def bgr_to_rgb(self, new_image=False):
+        """
+        cv2 uses bgr rather than rgb, but this can be changed via this method
+        """
+        rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+        if new_image:
+            return ImageObject(rgb)
+        else:
+            self.image = rgb
 
     def invert_image(self, new_image=False):
         """
