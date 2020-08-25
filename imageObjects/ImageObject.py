@@ -19,15 +19,36 @@ class ImageObject:
         """
         Clearer message of what the current instance contains
         """
-        if len(self.image.shape) < 3:
+        if self.channels < 3:
             channels_type = "Mono"
-            channels = 1
         else:
             channels_type = "Colour"
-            channels = self.image.shape[2]
 
-        return f"Height: {self.image.shape[0]}\nWidth: {self.image.shape[1]}\nType: {channels_type}\n" \
-               f"Channels: {channels}"
+        return f"Height: {self.height}\nWidth: {self.width}\nType: {channels_type}\nChannels: {self.channels}"
+
+    @property
+    def height(self):
+        """
+        The height of the image in pixels
+        """
+        return self.image.shape[0]
+
+    @property
+    def width(self):
+        """
+        The width of the image in pixels
+        """
+        return self.image.shape[1]
+
+    @property
+    def channels(self):
+        """
+        The number of channels of colour data that exist in the image
+        """
+        if len(self.image.shape) < 3:
+            return 1
+        else:
+            return self.image.shape[2]
 
     def show(self, window_name="Image"):
         """
@@ -198,7 +219,7 @@ class ImageObject:
             approx = cv2.CHAIN_APPROX_NONE
 
         # find contours doesn't work on mono images so create a mono image if required
-        if len(self.image.shape) > 2:
+        if self.channels > 2:
             image = self.mono_convert(new_image=True).image
         else:
             image = self.image.copy()
