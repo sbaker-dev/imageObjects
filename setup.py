@@ -32,7 +32,8 @@ PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
     'opencv-python',
-    'numpy']
+    'numpy',
+    'matplotlib']
 
 PACKAGES = [
     "imageObjects",
