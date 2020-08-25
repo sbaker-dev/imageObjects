@@ -1,23 +1,33 @@
 # Copyright (C) 2020 Samuel Baker
 
-DESCRIPTION = "Open computer vision contours as objects"
+DESCRIPTION = "Helper Objects for working with open computer vision and image projects"
 LONG_DESCRIPTION = """
-# contourObject
+# imageObjects
 
+This acts as an API of sorts for CV2, with some common methods cast into objects that work with images, contours and 
+more. 
+
+### ContourObject
 open-cv python has contours, a extremely useful component that can be extracted from images. However, these components 
 are in a ndarray format that can then be processed by a list of methods, rather than an object which has a list of 
 methods. This library changes that around and allows for the contour extracted via open cv python to be placed in an 
 object which can then be manipulated. 
 
+### ImageObject
+There are lots of common image functions that have been mapped to images, so that a loaded image can have these as 
+properties or as methods inherently rather than having to code them yourself.
+
+
+
 """
 LONG_DESCRIPTION_CONTENT_TYPE = "text/markdown"
 
-DISTNAME = 'contourObject'
+DISTNAME = 'imageObjects'
 MAINTAINER = 'Samuel Baker'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/contourObject"
-VERSION = "0.02.0"
+VERSION = "0.01.0"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
@@ -25,7 +35,7 @@ INSTALL_REQUIRES = [
     'numpy']
 
 PACKAGES = [
-    "contourObject",
+    "imageObjects",
 ]
 
 CLASSIFIERS = [
@@ -41,7 +51,7 @@ if __name__ == "__main__":
     import sys
 
     if sys.version_info[:2] < (3, 7):
-        raise RuntimeError("contourObject requires python >= 3.7.")
+        raise RuntimeError("imageObjects requires python >= 3.7.")
 
     setup(
         name=DISTNAME,
