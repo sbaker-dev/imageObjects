@@ -239,8 +239,22 @@ class ImageObject:
             else:
                 return None
 
+    def alpha_mask(self, new_image=False):
+        """
+        Takes a 4 channel image and returns the alpha channel as a mask
+        """
+        _, mask = cv2.threshold(self.image[:, :, 3], 0, 255, cv2.THRESH_BINARY)
+        if new_image:
+            return ImageObject(mask)
+        else:
+            self.image = new_image
 
-
-
-
-
+    def blank_like(self, new_image=False):
+        """
+        Create a blank image of the same dimensions as the image
+        """
+        blank = np.zeros_like(self.image)
+        if new_image:
+            return ImageObject(blank)
+        else:
+            self.image = blank
