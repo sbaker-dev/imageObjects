@@ -13,3 +13,14 @@ class ImageObject:
         cv2.imshow(window_name, self.image)
         cv2.waitKey()
 
+    def invert_image(self, new_image=False):
+        """
+        Invert the current image
+        """
+        inverted = cv2.bitwise_not(self.image)
+        if new_image:
+            return inverted
+        else:
+            self.image = inverted
+
+
