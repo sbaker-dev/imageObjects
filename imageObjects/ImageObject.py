@@ -8,6 +8,26 @@ class ImageObject:
     def __init__(self, image):
         self.image = image
 
+    def __repr__(self):
+        """
+        Return for debug
+        """
+        return f"{self.image.shape}"
+
+    def __str__(self):
+        """
+        Clearer message of what the current instance contains
+        """
+        if len(self.image.shape) < 3:
+            channels_type = "Mono"
+            channels = 1
+        else:
+            channels_type = "Colour"
+            channels = self.image.shape[2]
+
+        return f"Height: {self.image.shape[0]}\nWidth: {self.image.shape[1]}\nType: {channels_type}\n" \
+               f"Channels: {channels}"
+
     def show(self, window_name="Image"):
         """
         Show the image and wait for a button to be pressed to continue. Mainly designed for debugging processes
