@@ -1,6 +1,7 @@
-import cv2
-import numpy as np
+from imageObjects.ContourObject import ContourObject
 from matplotlib import pyplot as plt
+import numpy as np
+import cv2
 import sys
 
 
@@ -120,7 +121,7 @@ class ImageObject:
             return kernel_values[kernel_type]
         except KeyError:
             sys.exit("ERROR: ImageObjects.morphology\n"
-                     f"Kernels can take on of the following {list(kernel_values.keys())} but found {kernel_type}")
+                     f"Kernels can take one of the following {list(kernel_values.keys())} but found {kernel_type}")
 
     def morphology(self, morph_type, kernel_vertical, kernel_horizontal, kernel_type="rect", new_image=False):
         """
@@ -134,7 +135,6 @@ class ImageObject:
         ------------
         kernel_type can take on the following keywords: rect, cross, ellipse. It defaults to rect
         """
-
         kernel = self._kernel(kernel_type, kernel_vertical, kernel_horizontal)
         if self._morph_type(morph_type) == 0:
             morphed = cv2.erode(self.image, kernel)
@@ -150,3 +150,76 @@ class ImageObject:
             return ImageObject(morphed)
         else:
             self.image = morphed
+
+    @staticmethod
+    def _retrieval_mode(retrieval_mode):
+        """
+        The retrieval mode determines the hierarchy of contours, explain in full in the cv2 docs:
+
+        https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_contours/py_contours_hierarchy/py_contours_hierarchy.html
+
+        retrieval_mode
+        -------------
+        retrieval_mode can take on of the following values: external, list, ccomp, tree, floodfill
+        """
+        retrieval_values = {"external": 0, "list": 1, "ccomp": 2, "tree": 3, "floodfill": 4}
+        try:
+            return retrieval_values[retrieval_mode]
+        except KeyError:
+            sys.exit("ERROR: ImageObjects.find_contours\n"
+                     f"Retrieval takes one of the following {list(retrieval_values.keys())} but found {retrieval_mode}")
+
+    def find_contours(self, retrieval_mode, simple_method=True, hierarchy_return=False):
+        """
+        Find contours within the current image. Since find contours only works on mono channel images, if the current
+        image is a colour image a new image is create that will not change the one in memory so it is not necessary to
+        change the image to gray manually.
+
+        retrieval_mode
+        ---------------
+        retrieval_mode can take on of the following values: external, list, ccomp, tree, floodfill
+
+        simple_method
+        --------------
+        Simple methods will only use the extremes, so for a straight line it will store the first and last point. If you
+        turn this off it will keep all the points on the line but this can lead to a very large over head so it is not
+        recommend unless you have a specific need for all those points.
+
+        hierarchy_return
+        ----------------
+        If you don't want to return the hierarchy you can leave this as default, otherwise set it to true
+        """
+
+        # Setup of extraction methods
+        retrieval = self._retrieval_mode(retrieval_mode)
+        if simple_method:
+            approx = cv2.CHAIN_APPROX_SIMPLE
+        else:
+            approx = cv2.CHAIN_APPROX_NONE
+
+        # find contours doesn't work on mono images so create a mono image if required
+        if len(self.image.shape) > 2:
+            image = self.mono_convert(new_image=True).image
+        else:
+            image = self.image.copy()
+
+        # Look for contours base on the setup
+        contours, hierarchy = cv2.findContours(image, retrieval, approx)
+
+        # If we find any contours, return the contours and the hierarchy if requested
+        if len(contours) > 0:
+            if hierarchy_return:
+                return [ContourObject(cnt) for cnt in contours], hierarchy
+            else:
+                return [ContourObject(cnt) for cnt in contours]
+        else:
+            if hierarchy_return:
+                return None, None
+            else:
+                return None
+
+
+
+
+
+
