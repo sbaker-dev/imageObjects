@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 
 class ImageObject:
@@ -22,5 +23,20 @@ class ImageObject:
             return ImageObject(inverted)
         else:
             self.image = inverted
+
+    def change_a_colour(self, current_colour, new_colour, new_image=False):
+        """
+        Change all current pixels of one bgr colour to a different bgr colour
+        """
+        if new_image:
+            image = self.image.copy()
+            image[np.where((image == [current_colour]).all(axis=2))] = [new_colour]
+            return ImageObject(image)
+        else:
+            self.image[np.where((self.image == [current_colour]).all(axis=2))] = [new_colour]
+
+
+
+
 
 
