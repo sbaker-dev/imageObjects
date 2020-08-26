@@ -246,7 +246,7 @@ class ImageObject:
         return self._update_or_export(cv2.rectangle(self.image.copy(), (0, 0), (self.width, self.height), colour, size),
                                       new_image)
 
-    def crop(self, height_min, height_max, width_min, width_max, relative=True, value_return=False, new_image=False):
+    def crop(self, height_min, height_max, width_min, width_max, relative=True, new_image=False):
         """
         Cropping can be relative or actual. If relative, each value represents a 0.0 - 1.0 range that acts as a
         percentage that the height and width will be cropped by. Otherwise, the actual pixel starting and ending values
@@ -279,7 +279,7 @@ class ImageObject:
         else:
             overlay = ImageObject(image_to_overlay)
 
-        original[y_start: y_start + overlay.height, x_start: x_start + overlay.width] = overlay
+        original[y_start: y_start + overlay.height, x_start: x_start + overlay.width] = overlay.image
 
         return self._update_or_export(original, new_image)
 
