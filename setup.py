@@ -17,9 +17,11 @@ object which can then be manipulated.
 There are lots of common image functions that have been mapped to images, so that a loaded image can have these as 
 properties or as methods inherently rather than having to code them yourself.
 
+Source code can be found at the git hub page for [imageObjects][io]
 
-
+[io]: https://github.com/sbaker-dev/imageObjects
 """
+
 LONG_DESCRIPTION_CONTENT_TYPE = "text/markdown"
 
 DISTNAME = 'imageObjects'
@@ -27,7 +29,7 @@ MAINTAINER = 'Samuel Baker'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/contourObject"
-VERSION = "0.02.0"
+VERSION = "0.02.1"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [

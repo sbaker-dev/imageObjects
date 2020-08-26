@@ -30,6 +30,12 @@ class ImageObject:
 
         return f"Height: {self.height}\nWidth: {self.width}\nType: {channels_type}\nChannels: {self.channels}"
 
+    def __copy__(self):
+        """
+        Allow duplication of instance
+        """
+        return ImageObject(self.image)
+
     @property
     def height(self):
         """
@@ -318,8 +324,8 @@ class ImageObject:
 
         return self._update_or_export(threshold_image, new_image)
 
-    def adaptive_threshold(self, assignment_value, gaussian_adaptive=True, binary_mode="binary", neighborhood_size=51,
-                           subtract_constant=20, new_image=False):
+    def adaptive_threshold(self, assignment_value=255, gaussian_adaptive=True, binary_mode="binary",
+                           neighborhood_size=51, subtract_constant=20, new_image=False):
         """
         This will apply by default a gaussian adaptive threshold using the binary method
         """
