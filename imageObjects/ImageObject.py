@@ -227,7 +227,14 @@ class ImageObject:
         """
         Create a blank image of the same dimensions as the image
         """
-        self._update_or_export(np.zeros_like(self.image), new_image)
+        return self._update_or_export(np.zeros_like(self.image), new_image)
+
+    def inset_border(self, colour=(0, 0, 0), size=1, new_image=False):
+        """
+        This function is overlays a hollow square on the image to create an inset border
+        """
+        return self._update_or_export(cv2.rectangle(self.image.copy(), (0, 0), (self.width, self.height), colour, size),
+                                      new_image)
 
     def extend_bounds(self, uniform=True, size=1, top=1, bottom=1, left=1, right=1, colour=(0, 0, 0), new_image=False):
         """
