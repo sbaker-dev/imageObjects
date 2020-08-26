@@ -169,7 +169,7 @@ class ImageObject:
             sys.exit("CRITICAL ERROR: ImageObject.morphology\n"
                      "dict value return from morph_values fell outside of operating range")
 
-        self._update_or_export(morphed, new_image)
+        return self._update_or_export(morphed, new_image)
 
     def find_contours(self, retrieval_mode, simple_method=True, hierarchy_return=False):
         """
@@ -221,7 +221,7 @@ class ImageObject:
         Takes a 4 channel image and returns the alpha channel as a mask
         """
         _, mask = cv2.threshold(self.image[:, :, 3], 0, 255, cv2.THRESH_BINARY)
-        self._update_or_export(mask, new_image)
+        return self._update_or_export(mask, new_image)
 
     def blank_like(self, new_image=False):
         """
@@ -246,7 +246,7 @@ class ImageObject:
         """
         Isolate shapes within a given bgr range.
         """
-        self._update_or_export(cv2.inRange(self._create_temp_image(), lower_thresh, upper_thresh), new_image)
+        return self._update_or_export(cv2.inRange(self._create_temp_image(), lower_thresh, upper_thresh), new_image)
 
     def mask_image(self, mask, new_image=False):
         """
@@ -257,7 +257,7 @@ class ImageObject:
         else:
             masked = cv2.bitwise_and(self.image, self.image, mask)
 
-        self._update_or_export(masked, new_image)
+        return self._update_or_export(masked, new_image)
 
     def binary_threshold(self, binary_threshold, binary_mode="binary", binary_max=255, new_image=False):
         """
@@ -268,14 +268,13 @@ class ImageObject:
 
         _, threshold_image = cv2.threshold(self.image, binary_threshold, binary_max, binary_mode)
 
-        self._update_or_export(threshold_image, new_image)
+        return self._update_or_export(threshold_image, new_image)
 
     def adaptive_threshold(self, assignment_value, gaussian_adaptive=True, binary_mode="binary", neighborhood_size=51,
                            subtract_constant=20, new_image=False):
         """
         This will apply by default a gaussian adaptive threshold using the binary method
         """
-
         # Set binary mode
         binary_values = {"binary": 0, "binary_inv": 1, "trunc": 2, "to_zero": 3, "to_zero_inv": 4}
         binary_mode = self._key_return("adaptive_threshold", "binary_mode", binary_values, binary_mode)
@@ -289,7 +288,7 @@ class ImageObject:
         thresh = cv2.adaptiveThreshold(self._create_temp_image(colour=False), assignment_value, adaptive_mode,
                                        binary_mode, neighborhood_size, subtract_constant)
 
-        self._update_or_export(thresh, new_image)
+        return self._update_or_export(thresh, new_image)
 
     def calculate_alpha_beta(self, clip_hist_percent=1):
         """
