@@ -285,4 +285,16 @@ class ImageObject:
         else:
             self.image = output_border
 
+    def shape_mask(self, lower_thresh, upper_thresh, new_image=False):
+        """
+        Isolate shapes within a given bgr range.
+        """
+        shape_mask = cv2.inRange(self._create_temp_image(), lower_thresh, upper_thresh)
+        if new_image:
+            return ImageObject(shape_mask)
+        else:
+            self.image = shape_mask
+
+
+
 
