@@ -173,6 +173,13 @@ class ImageObject:
             self.image = morphed
 
     @staticmethod
+    def _key_return(method_name, dict_name, dict_of_values, key):
+        try:
+            return dict_of_values[key]
+        except KeyError:
+            raise KeyError(f"{method_name}s {dict_name} only takes {list(dict_of_values.keys())} but found {key}")
+
+    @staticmethod
     def _retrieval_mode(retrieval_mode):
         """
         The retrieval mode determines the hierarchy of contours, explain in full in the cv2 docs:
@@ -309,6 +316,20 @@ class ImageObject:
             return ImageObject(masked)
         else:
             self.image = masked
+
+    def binary_threshold(self, binary_threshold, binary_mode="binary", binary_max=255, new_image=False):
+        """
+        Create or push the image to a binary black on white image based on a threshold of mono pixel values.
+        """
+        binary_values = {"binary": 0, "binary_inv": 1, "trunc": 2, "to_zero": 3, "to_zero_inv": 4}
+        binary_mode = self._key_return("binary_threshold", "binary_mode", binary_values, binary_mode)
+
+        _, threshold_image = cv2.threshold(self.image, binary_threshold, binary_max, binary_mode)
+
+        if new_image:
+            return ImageObject(threshold_image)
+        else:
+            self.image = threshold_image
 
     def calculate_alpha_beta(self, clip_hist_percent=1):
         """
