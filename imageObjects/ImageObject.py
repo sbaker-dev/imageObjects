@@ -106,31 +106,19 @@ class ImageObject:
         """
         cv2 uses bgr rather than rgb, but this can be changed via this method
         """
-        rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
-        if new_image:
-            return ImageObject(rgb)
-        else:
-            self.image = rgb
+        return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB), new_image)
 
     def colour_covert(self, new_image=False):
         """
         Convert image to colour
         """
-        colour_image = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)
-        if new_image:
-            return ImageObject(colour_image)
-        else:
-            self.image = colour_image
+        return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR), new_image)
 
     def mono_convert(self, new_image):
         """
         Convert to a mono channel gray image
         """
-        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        if new_image:
-            return ImageObject(gray)
-        else:
-            self.image = gray
+        return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY), new_image)
 
     def change_a_colour(self, current_colour, new_colour, new_image=False):
         """
@@ -147,22 +135,7 @@ class ImageObject:
         """
         Invert the current image
         """
-        inverted = cv2.bitwise_not(self.image)
-        if new_image:
-            return ImageObject(inverted)
-        else:
-            self.image = inverted
-
-    @staticmethod
-    def _key_return(method_name, dict_name, dict_of_values, key):
-        """
-        Many of our operations require a mode that is set via a dict, this will return the mode requested if it exists
-        or raise a key error with information to the user of what they submitted vs what was expected.
-        """
-        try:
-            return dict_of_values[key]
-        except KeyError:
-            raise KeyError(f"{method_name}s {dict_name} only takes {list(dict_of_values.keys())} but found {key}")
+        return self._update_or_export(cv2.bitwise_not(self.image), new_image)
 
     def morphology(self, morph_type, kernel_vertical, kernel_horizontal, kernel_type="rect", new_image=False):
         """
@@ -196,26 +169,7 @@ class ImageObject:
             sys.exit("CRITICAL ERROR: ImageObject.morphology\n"
                      "dict value return from morph_values fell outside of operating range")
 
-        if new_image:
-            return ImageObject(morphed)
-        else:
-            self.image = morphed
-
-    def _create_temp_image(self, colour=True):
-        """
-        Sometimes we need to create a temporary image, when certain operations require a mono or three channel or more
-        image and the current image is not of that type. This creates a colour image by default, but can also create
-        mono image, of the current image. If the current image actually meets those specifications, then it is just
-        duplicated.
-        """
-        if colour and self.channels < 3:
-            image = self.colour_covert(new_image=True).image
-        elif not colour and self.channels > 2:
-            image = self.mono_convert(new_image=True).image
-        else:
-            image = self.image.copy()
-
-        return image
+        self._update_or_export(morphed, new_image)
 
     def find_contours(self, retrieval_mode, simple_method=True, hierarchy_return=False):
         """
@@ -267,20 +221,13 @@ class ImageObject:
         Takes a 4 channel image and returns the alpha channel as a mask
         """
         _, mask = cv2.threshold(self.image[:, :, 3], 0, 255, cv2.THRESH_BINARY)
-        if new_image:
-            return ImageObject(mask)
-        else:
-            self.image = new_image
+        self._update_or_export(mask, new_image)
 
     def blank_like(self, new_image=False):
         """
         Create a blank image of the same dimensions as the image
         """
-        blank = np.zeros_like(self.image)
-        if new_image:
-            return ImageObject(blank)
-        else:
-            self.image = blank
+        self._update_or_export(np.zeros_like(self.image), new_image)
 
     def extend_bounds(self, uniform=True, size=1, top=1, bottom=1, left=1, right=1, colour=(0, 0, 0), new_image=False):
         """
@@ -293,20 +240,13 @@ class ImageObject:
         else:
             output_border = cv2.copyMakeBorder(self.image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=colour)
 
-        if new_image:
-            return ImageObject(output_border)
-        else:
-            self.image = output_border
+        self._update_or_export(output_border, new_image)
 
     def shape_mask(self, lower_thresh, upper_thresh, new_image=False):
         """
         Isolate shapes within a given bgr range.
         """
-        shape_mask = cv2.inRange(self._create_temp_image(), lower_thresh, upper_thresh)
-        if new_image:
-            return ImageObject(shape_mask)
-        else:
-            self.image = shape_mask
+        self._update_or_export(cv2.inRange(self._create_temp_image(), lower_thresh, upper_thresh), new_image)
 
     def mask_image(self, mask, new_image=False):
         """
@@ -317,10 +257,7 @@ class ImageObject:
         else:
             masked = cv2.bitwise_and(self.image, self.image, mask)
 
-        if new_image:
-            return ImageObject(masked)
-        else:
-            self.image = masked
+        self._update_or_export(masked, new_image)
 
     def binary_threshold(self, binary_threshold, binary_mode="binary", binary_max=255, new_image=False):
         """
@@ -331,10 +268,7 @@ class ImageObject:
 
         _, threshold_image = cv2.threshold(self.image, binary_threshold, binary_max, binary_mode)
 
-        if new_image:
-            return ImageObject(threshold_image)
-        else:
-            self.image = threshold_image
+        self._update_or_export(threshold_image, new_image)
 
     def calculate_alpha_beta(self, clip_hist_percent=1):
         """
