@@ -190,6 +190,22 @@ class ImageObject:
             sys.exit("ERROR: ImageObjects.find_contours\n"
                      f"Retrieval takes one of the following {list(retrieval_values.keys())} but found {retrieval_mode}")
 
+    def _create_temp_image(self, colour=True):
+        """
+        Sometimes we need to create a temporary image, when certain operations require a mono or three channel or more
+        image and the current image is not of that type. This creates a colour image by default, but can also create
+        mono image, of the current image. If the current image actually meets those specifications, then it is just
+        duplicated.
+        """
+        if colour and self.channels < 3:
+            image = self.colour_covert(new_image=True).image
+        elif not colour and self.channels > 2:
+            image = self.mono_convert(new_image=True).image
+        else:
+            image = self.image.copy()
+
+        return image
+
     def find_contours(self, retrieval_mode, simple_method=True, hierarchy_return=False):
         """
         Find contours within the current image. Since find contours only works on mono channel images, if the current
@@ -218,14 +234,8 @@ class ImageObject:
         else:
             approx = cv2.CHAIN_APPROX_NONE
 
-        # find contours doesn't work on mono images so create a mono image if required
-        if self.channels > 2:
-            image = self.mono_convert(new_image=True).image
-        else:
-            image = self.image.copy()
-
         # Look for contours base on the setup
-        contours, hierarchy = cv2.findContours(image, retrieval, approx)
+        contours, hierarchy = cv2.findContours(self._create_temp_image(colour=False), retrieval, approx)
 
         # If we find any contours, return the contours and the hierarchy if requested
         if len(contours) > 0:
