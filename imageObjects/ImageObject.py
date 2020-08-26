@@ -118,31 +118,15 @@ class ImageObject:
             self.image = inverted
 
     @staticmethod
-    def _morph_type(morph_type):
+    def _key_return(method_name, dict_name, dict_of_values, key):
         """
-        Use the morph_type key provided by the user to parse out the value to be used to set morphology via cv2
+        Many of our operations require a mode that is set via a dict, this will return the mode requested if it exists
+        or raise a key error with information to the user of what they submitted vs what was expected.
         """
-        morph_values = {"erode": 0, "dilate": 1, "open": 2, "close": 3, "gradient": 4, "tophat": 5, "blackhat": 6}
         try:
-            return morph_values[morph_type]
+            return dict_of_values[key]
         except KeyError:
-            sys.exit(f"ERROR: ImageObject.morphology\n"
-                     f"Morphology type one of the following {list(morph_values.keys())} but found {morph_type}")
-
-    @staticmethod
-    def _kernel(kernel_type, kernel_vertical, kernel_horizontal):
-        """
-        Use kernel_type key provided by the user to parse out the kernel key to be used to construct the kernal of size
-        dimensions equal to the kernel vertical and horizontal
-        """
-        kernel_values = {"rect": cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_vertical, kernel_horizontal)),
-                         "cross": cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_vertical, kernel_horizontal)),
-                         "ellipse": cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_vertical, kernel_horizontal))}
-        try:
-            return kernel_values[kernel_type]
-        except KeyError:
-            sys.exit("ERROR: ImageObjects.morphology\n"
-                     f"Kernels can take one of the following {list(kernel_values.keys())} but found {kernel_type}")
+            raise KeyError(f"{method_name}s {dict_name} only takes {list(dict_of_values.keys())} but found {key}")
 
     def morphology(self, morph_type, kernel_vertical, kernel_horizontal, kernel_type="rect", new_image=False):
         """
@@ -156,47 +140,30 @@ class ImageObject:
         ------------
         kernel_type can take on the following keywords: rect, cross, ellipse. It defaults to rect
         """
-        kernel = self._kernel(kernel_type, kernel_vertical, kernel_horizontal)
-        if self._morph_type(morph_type) == 0:
+        # Set kernel
+        kernel_values = {"rect": cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_vertical, kernel_horizontal)),
+                         "cross": cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_vertical, kernel_horizontal)),
+                         "ellipse": cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_vertical, kernel_horizontal))}
+        kernel = self._key_return("morphology", "kernel_type", kernel_values, kernel_type)
+
+        # Set morphology type
+        morph_values = {"erode": 0, "dilate": 1, "open": 2, "close": 3, "gradient": 4, "tophat": 5, "blackhat": 6}
+        morph_type = self._key_return("morphology", "morph_type", morph_values, morph_type)
+
+        if morph_type == 0:
             morphed = cv2.erode(self.image, kernel)
-        elif self._morph_type(morph_type) == 1:
+        elif morph_type == 1:
             morphed = cv2.dilate(self.image, kernel)
-        elif 1 < self._morph_type(morph_type) < 7:
+        elif 1 < morph_type < 7:
             morphed = cv2.morphologyEx(self.image, morph_type, kernel)
         else:
             sys.exit("CRITICAL ERROR: ImageObject.morphology\n"
-                     "dict value return from self._morph_type() fell outside of operating range")
+                     "dict value return from morph_values fell outside of operating range")
 
         if new_image:
             return ImageObject(morphed)
         else:
             self.image = morphed
-
-    @staticmethod
-    def _key_return(method_name, dict_name, dict_of_values, key):
-        try:
-            return dict_of_values[key]
-        except KeyError:
-            raise KeyError(f"{method_name}s {dict_name} only takes {list(dict_of_values.keys())} but found {key}")
-
-    @staticmethod
-    def _retrieval_mode(retrieval_mode):
-        """
-        The retrieval mode determines the hierarchy of contours, explain in full in the cv2 docs:
-
-        https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_contours
-        /py_contours_hierarchy/py_contours_hierarchy.html
-
-        retrieval_mode
-        -------------
-        retrieval_mode can take on of the following values: external, list, ccomp, tree, floodfill
-        """
-        retrieval_values = {"external": 0, "list": 1, "ccomp": 2, "tree": 3, "floodfill": 4}
-        try:
-            return retrieval_values[retrieval_mode]
-        except KeyError:
-            sys.exit("ERROR: ImageObjects.find_contours\n"
-                     f"Retrieval takes one of the following {list(retrieval_values.keys())} but found {retrieval_mode}")
 
     def _create_temp_image(self, colour=True):
         """
@@ -234,9 +201,11 @@ class ImageObject:
         ----------------
         If you don't want to return the hierarchy you can leave this as default, otherwise set it to true
         """
+        # Set retrieval mode
+        retrieval_values = {"external": 0, "list": 1, "ccomp": 2, "tree": 3, "floodfill": 4}
+        retrieval = self._key_return("find_contours", "retrieval_mode", retrieval_values, retrieval_mode)
 
         # Setup of extraction methods
-        retrieval = self._retrieval_mode(retrieval_mode)
         if simple_method:
             approx = cv2.CHAIN_APPROX_SIMPLE
         else:
