@@ -177,7 +177,8 @@ class ImageObject:
         """
         The retrieval mode determines the hierarchy of contours, explain in full in the cv2 docs:
 
-        https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_contours/py_contours_hierarchy/py_contours_hierarchy.html
+        https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_contours
+        /py_contours_hierarchy/py_contours_hierarchy.html
 
         retrieval_mode
         -------------
@@ -295,6 +296,45 @@ class ImageObject:
         else:
             self.image = shape_mask
 
+    def calculate_alpha_beta(self, clip_hist_percent=1):
+        """
+        This calculates the current alpha and beta values from an image
 
+        From https://stackoverflow.com/questions/56905592/automatic-contrast-and-brightness-adjustment-of-a-color-photo-
+        of-a-sheet-of-paper
+        """
+        gray = self._create_temp_image(colour=False)
+
+        hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
+        hist_size = len(hist)
+
+        # Calculate cumulative distribution from the histogram
+        accumulator = []
+        for index in range(hist_size):
+            if index == 0:
+                accumulator.append(float(hist[0]))
+            else:
+                accumulator.append(accumulator[index - 1] + float(hist[index]))
+
+        # Locate points to clip
+        maximum = accumulator[-1]
+        clip_hist_percent *= (maximum / 100.0)
+        clip_hist_percent /= 2.0
+
+        # Locate left cut
+        minimum_gray = 0
+        while accumulator[minimum_gray] < clip_hist_percent:
+            minimum_gray += 1
+
+        # Locate right cut
+        maximum_gray = hist_size - 1
+        while accumulator[maximum_gray] >= (maximum - clip_hist_percent):
+            maximum_gray -= 1
+
+        # Calculate alpha and beta values
+        alpha = 255 / (maximum_gray - minimum_gray)
+        beta = -minimum_gray * alpha
+
+        return alpha, beta
 
 
