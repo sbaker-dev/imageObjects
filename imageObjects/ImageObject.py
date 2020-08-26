@@ -79,7 +79,7 @@ class ImageObject:
 
     def _update_or_export(self, image, export):
         """
-        Just a method to update or export our image so that we don't need to make this call in each method
+        Check if the user said to update or export our image
         """
         if export:
             return ImageObject(image)
@@ -96,7 +96,7 @@ class ImageObject:
 
     def notebook_show(self, title="Image"):
         """
-        For jupyter we don't want to create a new image, and instead want to show an image via matplotlib.
+        For jupyter we don't want to create a new window, and instead want to show an image via matplotlib.
         """
         plt.imshow(self.bgr_to_rgb(new_image=True).image)
         plt.title(title)
@@ -269,6 +269,27 @@ class ImageObject:
         _, threshold_image = cv2.threshold(self.image, binary_threshold, binary_max, binary_mode)
 
         self._update_or_export(threshold_image, new_image)
+
+    def adaptive_threshold(self, assignment_value, gaussian_adaptive=True, binary_mode="binary", neighborhood_size=51,
+                           subtract_constant=20, new_image=False):
+        """
+        This will apply by default a gaussian adaptive threshold using the binary method
+        """
+
+        # Set binary mode
+        binary_values = {"binary": 0, "binary_inv": 1, "trunc": 2, "to_zero": 3, "to_zero_inv": 4}
+        binary_mode = self._key_return("adaptive_threshold", "binary_mode", binary_values, binary_mode)
+
+        # Set adaptive method
+        if gaussian_adaptive:
+            adaptive_mode = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+        else:
+            adaptive_mode = cv2.ADAPTIVE_THRESH_MEAN_C
+
+        thresh = cv2.adaptiveThreshold(self._create_temp_image(colour=False), assignment_value, adaptive_mode,
+                                       binary_mode, neighborhood_size, subtract_constant)
+
+        self._update_or_export(thresh, new_image)
 
     def calculate_alpha_beta(self, clip_hist_percent=1):
         """
