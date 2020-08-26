@@ -296,6 +296,20 @@ class ImageObject:
         else:
             self.image = shape_mask
 
+    def mask_image(self, mask, new_image=False):
+        """
+        This will use another image as a mask for this image. Can be an ImageObject or any cv2 compatible image.
+        """
+        if isinstance(mask, ImageObject):
+            masked = cv2.bitwise_and(self.image, self.image, mask.image)
+        else:
+            masked = cv2.bitwise_and(self.image, self.image, mask)
+
+        if new_image:
+            return ImageObject(masked)
+        else:
+            self.image = masked
+
     def calculate_alpha_beta(self, clip_hist_percent=1):
         """
         This calculates the current alpha and beta values from an image
@@ -309,12 +323,11 @@ class ImageObject:
         hist_size = len(hist)
 
         # Calculate cumulative distribution from the histogram
-        accumulator = []
-        for index in range(hist_size):
-            if index == 0:
-                accumulator.append(float(hist[0]))
-            else:
-                accumulator.append(accumulator[index - 1] + float(hist[index]))
+        previous = float(hist[0])
+        accumulator = [previous]
+        for index in range(1, hist_size):
+            previous = previous + float(hist[index])
+            accumulator.append(previous)
 
         # Locate points to clip
         maximum = accumulator[-1]
@@ -336,5 +349,3 @@ class ImageObject:
         beta = -minimum_gray * alpha
 
         return alpha, beta
-
-
