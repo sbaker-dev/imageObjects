@@ -263,10 +263,7 @@ class ImageObject:
         crop = image[int(height * height_min):int(height * height_max), int(width * width_min):int(width * width_max)]
 
         # If we want to know where the crop points started, we can return these values
-        if value_return:
-            return self._update_or_export(crop, new_image), int(height * height_min), int(width * width_min)
-        else:
-            return self._update_or_export(crop, new_image)
+        return self._update_or_export(crop, new_image)
 
     def overlay_image(self, image_to_overlay, y_start, x_start, new_image=False):
         """
