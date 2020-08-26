@@ -258,6 +258,21 @@ class ImageObject:
         else:
             return self._update_or_export(crop, new_image)
 
+    def overlay_image(self, image_to_overlay, y_start, x_start, new_image=False):
+        """
+        This overlays a smaller image onto the current image, based on starting y and x position of the overlay.
+        """
+        original = self.image.copy()
+
+        if isinstance(image_to_overlay, ImageObject):
+            overlay = image_to_overlay
+        else:
+            overlay = ImageObject(image_to_overlay)
+
+        original[y_start: y_start + overlay.height, x_start: x_start + overlay.width] = overlay
+
+        return self._update_or_export(original, new_image)
+
     def extend_bounds(self, uniform=True, size=1, top=1, bottom=1, left=1, right=1, colour=(0, 0, 0), new_image=False):
         """
         This will extend the bounds of the image, if uniform is selected then you only need to adjust size and all
