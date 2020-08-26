@@ -50,6 +50,42 @@ class ImageObject:
         else:
             return self.image.shape[2]
 
+    @staticmethod
+    def _key_return(method_name, dict_name, dict_of_values, key):
+        """
+        Many of our operations require a mode that is set via a dict, this will return the mode requested if it exists
+        or raise a key error with information to the user of what they submitted vs what was expected.
+        """
+        try:
+            return dict_of_values[key]
+        except KeyError:
+            raise KeyError(f"{method_name}s {dict_name} only takes {list(dict_of_values.keys())} but found {key}")
+
+    def _create_temp_image(self, colour=True):
+        """
+        Sometimes we need to create a temporary image, when certain operations require a mono or three channel or more
+        image and the current image is not of that type. This creates a colour image by default, but can also create
+        mono image, of the current image. If the current image actually meets those specifications, then it is just
+        duplicated.
+        """
+        if colour and self.channels < 3:
+            image = self.colour_covert(new_image=True).image
+        elif not colour and self.channels > 2:
+            image = self.mono_convert(new_image=True).image
+        else:
+            image = self.image.copy()
+
+        return image
+
+    def _update_or_export(self, image, export):
+        """
+        Just a method to update or export our image so that we don't need to make this call in each method
+        """
+        if export:
+            return ImageObject(image)
+        else:
+            self.image = image
+
     def show(self, window_name="Image"):
         """
         Show the image and wait for a button to be pressed to continue. Mainly designed for debugging processes
