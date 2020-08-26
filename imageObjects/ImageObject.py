@@ -236,6 +236,28 @@ class ImageObject:
         return self._update_or_export(cv2.rectangle(self.image.copy(), (0, 0), (self.width, self.height), colour, size),
                                       new_image)
 
+    def crop(self, height_min, height_max, width_min, width_max, relative=True, value_return=False, new_image=False):
+        """
+        Cropping can be relative or actual. If relative, each value represents a 0.0 - 1.0 range that acts as a
+        percentage that the height and width will be cropped by. Otherwise, the actual pixel starting and ending values
+        will be the input which should be in a range of 0-width/height max.
+        """
+        if relative:
+            width = self.width
+            height = self.height
+        else:
+            width = 1
+            height = 1
+
+        image = self.image.copy()
+        crop = image[int(height * height_min):int(height * height_max), int(width * width_min):int(width * width_max)]
+
+        # If we want to know where the crop points started, we can return these values
+        if value_return:
+            return self._update_or_export(crop, new_image), int(height * height_min), int(width * width_min)
+        else:
+            return self._update_or_export(crop, new_image)
+
     def extend_bounds(self, uniform=True, size=1, top=1, bottom=1, left=1, right=1, colour=(0, 0, 0), new_image=False):
         """
         This will extend the bounds of the image, if uniform is selected then you only need to adjust size and all
