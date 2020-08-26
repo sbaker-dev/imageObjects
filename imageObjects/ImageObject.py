@@ -258,3 +258,21 @@ class ImageObject:
             return ImageObject(blank)
         else:
             self.image = blank
+
+    def extend_bounds(self, uniform=True, size=1, top=1, bottom=1, left=1, right=1, colour=(0, 0, 0), new_image=False):
+        """
+        This will extend the bounds of the image, if uniform is selected then you only need to adjust size and all
+        borders will extend by that amount. Otherwise you can find tweak the size increase through the top, bottom,
+        left, right parameters.
+        """
+        if uniform:
+            output_border = cv2.copyMakeBorder(self.image, size, size, size, size, cv2.BORDER_CONSTANT, value=colour)
+        else:
+            output_border = cv2.copyMakeBorder(self.image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=colour)
+
+        if new_image:
+            return ImageObject(output_border)
+        else:
+            self.image = output_border
+
+
