@@ -6,6 +6,10 @@ import sys
 
 
 class ImageObject:
+    """
+    This creates an object from a cv2 compatible image which can then create new images from itself, or update itself by
+    its inherent methods.
+    """
     def __init__(self, image):
         self.image = image
 
