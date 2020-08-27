@@ -304,9 +304,9 @@ class ImageObject:
         This will use another image as a mask for this image. Can be an ImageObject or any cv2 compatible image.
         """
         if isinstance(mask, ImageObject):
-            masked = cv2.bitwise_and(self.image, self.image, mask.image)
+            masked = cv2.bitwise_and(self.image, self.image, mask=mask.image)
         else:
-            masked = cv2.bitwise_and(self.image, self.image, mask)
+            masked = cv2.bitwise_and(self.image, self.image, mask=mask)
 
         return self._update_or_export(masked, new_image)
 
