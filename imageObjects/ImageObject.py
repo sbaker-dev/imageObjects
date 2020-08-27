@@ -50,6 +50,12 @@ class ImageObject:
         """
         return self.image.shape[1]
 
+    def pixel_total(self):
+        """
+        Total number of pixels in the image
+        """
+        return self.width * self.height
+
     @property
     def channels(self):
         """
@@ -123,6 +129,12 @@ class ImageObject:
         Convert image to colour
         """
         return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR), new_image)
+
+    def change_pixel_colour(self, pixel_column_index, pixel_row_index, colour):
+        """
+        Change a specific pixel to a certain colour via column and row indexes
+        """
+        self.image[pixel_column_index, pixel_row_index] = colour
 
     def mono_convert(self, new_image):
         """
