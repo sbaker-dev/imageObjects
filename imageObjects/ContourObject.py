@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from imageObjects.ImageObject import ImageObject
 
 
 class ContourObject:
@@ -132,8 +133,11 @@ class ContourObject:
         """
         return (((self.contour - self.centroid) * scale).astype(np.int32) + self.centroid).astype(np.int32)
 
-    def draw_contour(self, image, bgr_colour=(180, 180, 180)):
+    def draw_contour(self, image, bgr_colour=(180, 180, 180), width=-1):
         """
         Draw the current contour on an image
         """
-        cv2.drawContours(image, [self.contour], 0, bgr_colour, -1)
+        if isinstance(image, ImageObject):
+            cv2.drawContours(image.image, [self.contour], 0, bgr_colour, width)
+        else:
+            cv2.drawContours(image, [self.contour], 0, bgr_colour, width)
