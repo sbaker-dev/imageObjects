@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from imageObjects.ImageObject import ImageObject
 
 
 class ContourObject:
@@ -137,7 +136,7 @@ class ContourObject:
         """
         Draw the current contour on an image
         """
-        if isinstance(image, ImageObject):
-            cv2.drawContours(image.image, [self.contour], 0, bgr_colour, width)
-        else:
+        if isinstance(image, np.ndarray):
             cv2.drawContours(image, [self.contour], 0, bgr_colour, width)
+        else:
+            cv2.drawContours(image.image, [self.contour], 0, bgr_colour, width)
