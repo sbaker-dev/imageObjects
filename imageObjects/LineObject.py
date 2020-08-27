@@ -22,11 +22,13 @@ class LineObject:
         else:
             sys.exit("LineObject expects an ImageObject")
 
-    def find_horizontal_lines(self, adjacent_runs=None):
+    def find_horizontal_lines(self, adjacent_pixels=None):
         """
         This will look for horizontal lines that meet the minimum width requirement
-        """
 
+        :param adjacent_pixels: If specified, this number of adjacent pixels will also be selected from each line found
+        :type adjacent_pixels: int | None
+        """
         # For each row of the image, find how many of the current row are not zero, grouping them by adjacency. If the
         # adjacent groups meet the minimum length requirement, draw them. Once all rows are complete, isolate the lines
         for i in range(self.img.height):
@@ -34,8 +36,10 @@ class LineObject:
             [self._draw_horizontal_lines(i, x_indexes) for x_indexes in indexes_list]
         self.img.shape_mask(self.mark_bgr, self.mark_bgr)
 
-        if adjacent_runs:
-            self._fill_adjacent(adjacent_runs)
+        if adjacent_pixels:
+            [c.draw_contour(self.img, (255, 255, 255), adjacent_pixels) for c in self.img.find_contours("external")]
+
+        self.img.show()
 
     def _draw_horizontal_lines(self, i, x_indexes):
         """
@@ -44,24 +48,3 @@ class LineObject:
         For the horizontal draw lines our index i is our row index and our in line ii is the column index.
         """
         return [self.img.change_pixel_colour(i, ii, self.mark) for ii in x_indexes if len(x_indexes) > self.length_min]
-
-    def _fill_adjacent(self, runs):
-        """
-        This is designed to isolate all the pixels that where found, and then get the adjacent pixels. From there we
-        then want fill all the pixels that are within the bounds of the image.
-        """
-        x, y = self.img.image.nonzero()
-        target_pixels = [[xv, yv] for xv, yv in zip(x, y)]
-
-        # For each run, we extend the bounds of the pixels we isolate by 1
-        for x, y in target_pixels:
-            for i in range(1, runs + 1):
-                adjacent_four = [(x + i, y), (x - i, y), (x, y - i), (x, y + i)]
-                for adjacent_x, adjacent_y in adjacent_four:
-                    try:
-                        self.img.change_pixel_colour(adjacent_x, adjacent_y, self.mark)
-                    except IndexError:
-                        pass
-
-        self.img.shape_mask(self.mark_bgr, self.mark_bgr)
-
