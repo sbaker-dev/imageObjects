@@ -57,6 +57,34 @@ class ContourObject:
         return max(self.y_list)
 
     @property
+    def left(self):
+        """
+        Left most point
+        """
+        return [np.mean(y for x, y in self.xy_list if x == self.min_x), self.min_x]
+
+    @property
+    def right(self):
+        """
+        Right most point
+        """
+        return [np.mean(y for x, y in self.xy_list if x == self.max_x), self.max_x]
+
+    @property
+    def top(self):
+        """
+        Top most point
+        """
+        return [np.mean(x for x, y in self.xy_list if y == self.min_y), self.min_y]
+
+    @property
+    def bottom(self):
+        """
+        Bottom most point
+        """
+        return [np.mean(x for x, y in self.xy_list if y == self.max_y), self.max_y]
+
+    @property
     def width(self):
         """
         The width of a contour calculated as max X minus min X coordinate position
