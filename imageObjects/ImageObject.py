@@ -392,3 +392,29 @@ class ImageObject:
         beta = -minimum_gray * alpha
 
         return alpha, beta
+
+    def perspective_transform(self, clockwise_points, new_image=False):
+        """
+        This will apply a perspective transformation on a image based on set of points given in order of:
+
+        bottom_left, bottom_right, top_right, top_left
+        """
+        bottom_left, bottom_right, top_right, top_left = clockwise_points
+
+        # 2) Set output dimensions
+        diff_x = int(bottom_left[0] - bottom_right[0])
+        diff_y = int(bottom_right[1] - top_right[1])
+
+        # 3)Set output points
+        out_top_left = (0, 0)
+        out_top_right = (abs(diff_x), 0)
+        out_bottom_left = (0, diff_y)
+        out_bottom_right = (abs(diff_x), diff_y)
+
+        # 4) Calculate transformation matrix
+        pts1 = np.float32([[top_left], [top_right], [bottom_left], [bottom_right]])
+        pts2 = np.float32([[out_top_left], [out_top_right], [out_bottom_left], [out_bottom_right]])
+        matrix = cv2.getPerspectiveTransform(pts1, pts2)
+
+        # 5) Apply the matrix transform on these points lists
+        self._update_or_export(cv2.warpPerspective(self.image, matrix, (abs(diff_x), diff_y)), new_image)
