@@ -61,14 +61,14 @@ class ContourObject:
         """
         Left most point
         """
-        return [np.mean([y for x, y in self.xy_list if x == self.min_x]), self.min_x]
+        return [self.min_x, np.mean([y for x, y in self.xy_list if x == self.min_x])]
 
     @property
     def right(self):
         """
         Right most point
         """
-        return [np.mean([y for x, y in self.xy_list if x == self.max_x]), self.max_x]
+        return [self.max_x, np.mean([y for x, y in self.xy_list if x == self.max_x])]
 
     @property
     def top(self):
