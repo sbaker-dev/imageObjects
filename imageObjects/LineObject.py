@@ -28,6 +28,22 @@ class LineObject:
         else:
             sys.exit("LineObject expects an ImageObject")
 
+    def find_vertical_lines(self, adjacent_pixels=None, fill_gaps_max_length=None):
+
+        # For each column of the image, find how many of the current column are not zero, grouping them by adjacency. If
+        # the adjacent groups meet the minimum length requirement, draw them. Once all column are complete, isolate
+        # the lines
+        for i in range(self.img.width):
+            [self._draw_vertical_lines(i, y_indexes) for y_indexes in cf.group_adjacent(self._isolate_column(i))]
+        self.img.shape_mask(self._mark_bgr, self._mark_bgr)
+
+        # If we want to enlarge the lines a bit, we can do so via drawing them larger via draw_contours.
+        if adjacent_pixels:
+            [c.draw_contour(self.img, self._WHITE_BGR, adjacent_pixels) for c in self.img.find_contours("external")]
+        self.img.show()
+
+
+
     def find_horizontal_lines(self, adjacent_pixels=None, fill_gaps_max_length=None):
         """
         This will look for horizontal lines that meet the minimum width requirement
@@ -45,17 +61,16 @@ class LineObject:
         # adjacent groups meet the minimum length requirement, draw them. Once all rows are complete, isolate the lines
         for i in range(self.img.height):
             [self._draw_horizontal_lines(i, x_indexes) for x_indexes in cf.group_adjacent(self._isolate_row(i))]
-
         self.img.shape_mask(self._mark_bgr, self._mark_bgr)
 
+        # If we want to enlarge the lines a bit, we can do so via drawing them larger via draw_contours.
         if adjacent_pixels:
             [c.draw_contour(self.img, self._WHITE_BGR, adjacent_pixels) for c in self.img.find_contours("external")]
 
-        self.img.show()
+        # If we want to try to bridge gaps between lines, this method will do so as long as the distance is less than
+        # the maximum length provided by the user via fill_gaps_max_length
         if fill_gaps_max_length:
             self._fill_horizontal_gaps(fill_gaps_max_length)
-
-        self.img.show()
 
     def _fill_horizontal_gaps(self, gap_max):
         """
@@ -95,9 +110,23 @@ class LineObject:
         """
         return cf.flatten(np.asarray((self.img.image[index, :]).nonzero()))
 
+    def _isolate_column(self, index):
+        """
+        Isolate the non zero indexes from the current column as a list
+        """
+        return cf.flatten(np.asarray((self.img.image[:, index]).nonzero()))
+
+    def _draw_vertical_lines(self, i, y_indexes):
+        """
+        Draws a vertical line on an image, as long as it meets the minimum length requirement, via pixel indexes
+
+        For the vertical lines our index i is our column index with ii being our row index
+        """
+        return [self.img.change_pixel_colour(ii, i, self._mark) for ii in y_indexes if len(y_indexes) > self._len_min]
+
     def _draw_horizontal_lines(self, i, x_indexes):
         """
-        Draws a horizontal line on an image as long, as it meets the minimum length requirement, via pixel indexes.
+        Draws a horizontal line on an image, as long as it meets the minimum length requirement, via pixel indexes.
 
         For the horizontal draw lines our index i is our row index and our in line ii is the column index.
         """
