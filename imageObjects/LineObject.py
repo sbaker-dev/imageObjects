@@ -44,14 +44,56 @@ class LineObject:
         # For each row of the image, find how many of the current row are not zero, grouping them by adjacency. If the
         # adjacent groups meet the minimum length requirement, draw them. Once all rows are complete, isolate the lines
         for i in range(self.img.height):
-            indexes_list = cf.group_adjacent(cf.flatten(np.asarray((self.img.image[i, :]).nonzero())))
-            [self._draw_horizontal_lines(i, x_indexes) for x_indexes in indexes_list]
-        self.img.shape_mask(self.mark_bgr, self.mark_bgr)
+            [self._draw_horizontal_lines(i, x_indexes) for x_indexes in cf.group_adjacent(self._isolate_row(i))]
+
+        self.img.shape_mask(self._mark_bgr, self._mark_bgr)
 
         if adjacent_pixels:
             [c.draw_contour(self.img, self._WHITE_BGR, adjacent_pixels) for c in self.img.find_contours("external")]
 
         self.img.show()
+        if fill_gaps_max_length:
+            self._fill_horizontal_gaps(fill_gaps_max_length)
+
+        self.img.show()
+
+    def _fill_horizontal_gaps(self, gap_max):
+        """
+        If a row has any pixels that are a line, we isolate this rows pixel values and break the row into lines. If
+        there is more than 1 segment, and the gap length between them is less than gap_max, then it is filled. If
+        block_out is set as a preference for failures, then if these lines where to small individual then they will be
+        removed.
+        """
+        row_pixel_values = np.sum(self.img.image == self._WHITE, axis=1)
+        for row_i, row_sum in enumerate(row_pixel_values):
+            if row_sum > 0:
+                row = self._isolate_row(row_i)
+
+                # If there are pixels in this row, isolate the gaps and if the gaps meet the criteria fill them
+                if (0 < self._isolate_gaps(row) < gap_max) and (row_sum > self._len_min):
+                    r_min = min(row)
+                    [self.img.change_pixel_colour(row_i, r_min + i, self._WHITE) for i in range(0, max(row) - r_min)]
+
+                # If we want to remove anything that fails the size check we can block it out
+                elif self._block_out and (row_sum < self._len_min):
+                    [self.img.change_pixel_colour(row_i, i, self._BLACK) for i in row]
+
+    @staticmethod
+    def _isolate_gaps(row):
+        """
+        Isolate gaps by the absence of pixels between two sets of found lines. Return the maximum gap.
+        """
+        gap_list = [[min(g), max(g)] for g in cf.group_adjacent(row)]
+        if len(gap_list) > 1:
+            return max([gap_list[i][0] - gap_list[i - 1][1] for i, gap in enumerate(gap_list) if i > 0])
+        else:
+            return 0
+
+    def _isolate_row(self, index):
+        """
+        Isolate the non zero indexes from the current row as a list
+        """
+        return cf.flatten(np.asarray((self.img.image[index, :]).nonzero()))
 
     def _draw_horizontal_lines(self, i, x_indexes):
         """
