@@ -153,5 +153,3 @@ class ContourObject:
             cv2.line(image.image, (image.height - 1, right_y), (0, left_y), colour, width)
         except OverflowError:
             print("draw_line_of_best_fit ran into an infinity problem - unable to process")
-
-
