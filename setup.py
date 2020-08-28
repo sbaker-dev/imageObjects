@@ -19,6 +19,9 @@ properties or as methods inherently rather than having to code them yourself.
 
 Source code can be found at the git hub page for [imageObjects][io]
 
+### LineObject
+This will search for lines within an ImageObject which you can then utilise as a mask or manipulate with ImageObjects
+
 [io]: https://github.com/sbaker-dev/imageObjects
 """
 
@@ -29,7 +32,7 @@ MAINTAINER = 'Samuel Baker'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/contourObject"
-VERSION = "0.03.0"
+VERSION = "0.03.1"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [

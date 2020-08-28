@@ -12,3 +12,6 @@ object which can then be manipulated.
 ### ImageObject
 There are lots of common image functions that have been mapped to images, so that a loaded image can have these as 
 properties or as methods inherently rather than having to code them yourself.
+
+### LineObject
+This will search for lines within an ImageObject which you can then utilise as a mask or manipulate with ImageObjects
