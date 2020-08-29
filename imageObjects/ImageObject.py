@@ -34,7 +34,7 @@ class ImageObject:
         """
         Allow duplication of instance
         """
-        return ImageObject(self.image)
+        return ImageObject(self.image.copy())
 
     @property
     def height(self):
