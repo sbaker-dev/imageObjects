@@ -56,7 +56,6 @@ class LineObject:
         # the maximum length provided by the user via fill_gaps_max_length
         if fill_gaps_max_length:
             self._fill_vertical_gaps(fill_gaps_max_length)
-        self.img.show()
 
     def find_horizontal_lines(self, adjacent_pixels=None, fill_gaps_max_length=None):
         """
