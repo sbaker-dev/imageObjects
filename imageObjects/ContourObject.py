@@ -173,7 +173,8 @@ class ContourObject:
         """
         The centroid of the contour in terms of [x, y]
         """
-        return [int(self.moments()['m10'] / self.moments()['m00']), int(self.moments()['m01'] / self.moments()['m00'])]
+        return self._Point([int(self.moments['m10'] / self.moments['m00']),
+                            int(self.moments['m01'] / self.moments['m00'])])
 
     def scale(self, scale):
         """
