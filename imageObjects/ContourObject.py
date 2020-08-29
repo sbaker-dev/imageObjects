@@ -111,7 +111,7 @@ class ContourObject:
         """
         Bottom most point
         """
-        return self._Point([np.mean([cord.x for cord, in self.xy_list if cord.y == self.max_y]), self.max_y])
+        return self._Point([np.mean([cord.x for cord in self.xy_list if cord.y == self.max_y]), self.max_y])
 
     @property
     def width(self):
