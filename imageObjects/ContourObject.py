@@ -21,10 +21,11 @@ class ContourObject:
         def __init__(self, cord):
             if isinstance(cord[0], np.ndarray):
                 self.point = cord[0]
-            elif isinstance(cord[0], (int, float)):
+            elif isinstance(cord[0], (int, float, np.intc, np.float32, np.float64)):
                 self.point = cord
             else:
-                raise AttributeError
+                raise AttributeError(f"Cord {cord} of type {type(cord)} with elements {type(cord[0])},"
+                                     f" {type(cord[1])} failed")
 
             self.x = self.point[0]
             self.y = self.point[1]
