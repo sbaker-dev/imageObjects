@@ -136,7 +136,7 @@ class ImageObject:
         """
         self.image[pixel_column_index, pixel_row_index] = colour
 
-    def mono_convert(self, new_image):
+    def mono_convert(self, new_image=False):
         """
         Convert to a mono channel gray image
         """
