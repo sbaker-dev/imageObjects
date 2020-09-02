@@ -202,12 +202,14 @@ class ContourObject:
     def draw_line_of_best_fit(self, image, colour=(180, 180, 180), width=1):
         """
         Draw a line of best fit on the image
+
+        Adapted from: https://stackoverflow.com/questions/14184147/detect-lines-opencv-in-object
         """
         [vx, vy, x, y] = cv2.fitLine(self.contour, cv2.DIST_L2, 0, 0.1, 0.01)
-        left_y = int((-x * vy / vx) + y)
-        right_y = int(((image.height - x) * vy / vx) + y)
+        y_min = int((-x * vy / vx) + y)
+        y_max = int(((image.width - x) * vy / vx) + y)
 
         try:
-            cv2.line(image.image, (image.height - 1, right_y), (0, left_y), colour, width)
+            cv2.line(image.image, (0, y_min), (image.width - 1, y_max), colour, width)
         except OverflowError:
             print("draw_line_of_best_fit ran into an infinity problem - unable to process")
