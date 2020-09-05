@@ -72,8 +72,7 @@ class ImageObject:
         """
         Check to see if the image is empty
         """
-        check = self.mono_convert(new_image=True)
-        if cv2.countNonZero(check.image) == 0:
+        if cv2.countNonZero(self._create_temp_image(colour=False)) == 0:
             return True
         else:
             return False
