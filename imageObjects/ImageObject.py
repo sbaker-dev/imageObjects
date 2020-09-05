@@ -50,6 +50,7 @@ class ImageObject:
         """
         return self.image.shape[1]
 
+    @property
     def pixel_total(self):
         """
         Total number of pixels in the image
