@@ -67,6 +67,17 @@ class ImageObject:
         else:
             return self.image.shape[2]
 
+    @property
+    def empty(self):
+        """
+        Check to see if the image is empty
+        """
+        check = self.mono_convert(new_image=True)
+        if cv2.countNonZero(check.image) == 0:
+            return True
+        else:
+            return False
+
     @staticmethod
     def _key_return(method_name, dict_name, dict_of_values, key):
         """
