@@ -148,6 +148,18 @@ class ImageObject:
         """
         self.image[pixel_column_index, pixel_row_index] = colour
 
+    def change_row_colour(self, row_index, new_colour):
+        """
+        Change a whole row to a new colour
+        """
+        self.image[row_index, :] = new_colour
+
+    def change_column_colour(self, column_index, new_colour):
+        """
+        Change a whole column to a new colour
+        """
+        self.image[:, column_index] = new_colour
+
     def mono_convert(self, new_image=False):
         """
         Convert to a mono channel gray image
