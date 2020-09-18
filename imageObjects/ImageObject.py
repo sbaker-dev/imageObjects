@@ -1,5 +1,6 @@
 from imageObjects.ContourObject import ContourObject
 from matplotlib import pyplot as plt
+from skimage.morphology import skeletonize as ski_ske
 import numpy as np
 import cv2
 import sys
