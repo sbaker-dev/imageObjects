@@ -281,6 +281,23 @@ class ImageObject:
         return self._update_or_export(cv2.rectangle(self.image.copy(), (0, 0), (self.width, self.height), colour, size),
                                       new_image)
 
+    def normalise(self, new_image=False):
+        """
+        Use Cv2 normalize to set all images to be 0's or 1's.
+        """
+        return self._update_or_export(cv2.normalize(self._create_temp_image(colour=False), None, alpha=0, beta=1,
+                                                    norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F), new_image)
+
+    def skeletonize_points(self, method="lee"):
+        """
+        Extract the points that make up the skeleton of the image via skimage
+        """
+        # Extract the binary points for a normalised image
+        binary_points = ski_ske(self.normalise(new_image=True).image, method=method)
+
+        # Return the list of points
+        return [[ci, ri] for ri, row in enumerate(binary_points) for ci, column in enumerate(row) if column]
+
     def crop(self, height_min, height_max, width_min, width_max, relative=True, new_image=False):
         """
         Cropping can be relative or actual. If relative, each value represents a 0.0 - 1.0 range that acts as a
