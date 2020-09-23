@@ -32,7 +32,7 @@ MAINTAINER = 'Samuel Baker'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/contourObject"
-VERSION = "0.05.0"
+VERSION = "0.06.0"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [

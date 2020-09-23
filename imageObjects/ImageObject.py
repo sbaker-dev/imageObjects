@@ -37,6 +37,44 @@ class ImageObject:
         """
         return ImageObject(self.image.copy())
 
+    def __getitem__(self, item):
+        """
+        Allow for indexing of an image, which is just another way to extract a row
+
+        :param item: Index
+        :type item: int
+        """
+        if item < self.height:
+            return self.extract_row(item)
+        else:
+            raise IndexError("Index out of range: Indexing an ImageObject returns that pixel row, so indexes cannot be"
+                             "greater than height-1 as its base zero")
+
+    def __iter__(self):
+        """
+        Iterate through the rows of an image
+        """
+        for row in self.image:
+            yield row
+
+    def __sub__(self, other):
+        """
+        Subtracts one image from another, always returns a new instance
+
+        :param other: Another ImageObject
+        :type other: ImageObject
+        """
+        return self._update_or_export(self.image - other.image, True)
+
+    def __add__(self, other):
+        """
+        Adds one image to another, always returns a new instance
+
+        :param other: Another ImageObject
+        :type other: ImageObject
+        """
+        return self._update_or_export(self.image + other.image, True)
+
     @property
     def height(self):
         """
