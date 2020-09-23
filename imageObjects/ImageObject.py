@@ -148,6 +148,18 @@ class ImageObject:
         """
         self.image[pixel_column_index, pixel_row_index] = colour
 
+    def extract_row(self, row_index):
+        """
+        Extract the numpy array of an image row
+        """
+        return self.image[row_index, :]
+
+    def extract_column(self, column_index):
+        """
+        Extract the numpy array of an image column
+        """
+        return self.image[:, column_index]
+
     def change_row_colour(self, row_index, new_colour):
         """
         Change a whole row to a new colour
