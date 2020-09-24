@@ -164,7 +164,10 @@ class ImageObject:
         """
         For jupyter we don't want to create a new window, and instead want to show an image via matplotlib.
         """
-        plt.imshow(self.bgr_to_rgb(new_image=True).image)
+        if self.channels > 1:
+            plt.imshow(self.bgr_to_rgb(new_image=True).image)
+        else:
+            plt.imshow(self.image, cmap="gray", vmin=0, vmax=255)
         plt.title(title)
         plt.show()
 
