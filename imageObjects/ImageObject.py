@@ -322,12 +322,6 @@ class ImageObject:
         _, mask = cv2.threshold(self.image[:, :, 3], 0, 255, cv2.THRESH_BINARY)
         return self._update_or_export(mask, new_image)
 
-    def create_blank(self, width, height):
-        """
-        If the user has not defined anything, they can create a new image of zeros of size width-height
-        """
-        return self._update_or_export(np.zeros((height, width), dtype="float32"), True)
-
     def blank_like(self, new_image=False):
         """
         Create a blank image of the same dimensions as the image
