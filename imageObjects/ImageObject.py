@@ -326,7 +326,7 @@ class ImageObject:
         """
         If the user has not defined anything, they can create a new image of zeros of size width-height
         """
-        return self._update_or_export(np.zeros((height, width)), True)
+        return self._update_or_export(np.zeros((height, width), dtype="float32"), True)
 
     def blank_like(self, new_image=False):
         """
