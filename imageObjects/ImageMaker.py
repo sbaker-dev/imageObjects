@@ -45,8 +45,7 @@ class ImageMaker:
         """
         Create a text box, containing the text that the user specified.
 
-        Adapted from: https://stackoverflow.com/questions/56660241/
-        how-to-wrap-text-in-opencv-when-i-print-it-on-an-image-and-it-exceeds-the-frame
+        Adapted this stack exchange post : shorturl.at/jrsy7
 
         """
 
