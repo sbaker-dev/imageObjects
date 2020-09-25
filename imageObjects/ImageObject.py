@@ -1,4 +1,5 @@
 from imageObjects.ContourObject import ContourObject
+from imageObjects.common import Point
 from matplotlib import pyplot as plt
 from skimage.morphology import skeletonize as ski_ske
 import numpy as np
@@ -335,6 +336,13 @@ class ImageObject:
         return self._update_or_export(cv2.rectangle(self.image.copy(), (0, 0), (self.width, self.height), colour, size),
                                       new_image)
 
+    def inset_rounded_border(self, colour, thickness, radius, fill_percentage, new_image=False):
+        """
+        Draw a rounded border on the edge of the image
+        """
+        return self._update_or_export(self.draw_rounded_box((0, 0), (self.width, self.height), colour, thickness,
+                                                            radius, fill_percentage, False), new_image)
+
     def normalise(self, new_image=False):
         """
         Use Cv2 normalize to set all images to be 0's or 1's.
@@ -398,6 +406,46 @@ class ImageObject:
             output_border = cv2.copyMakeBorder(self.image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=colour)
 
         self._update_or_export(output_border, new_image)
+
+    def draw_rounded_box(self, point1, point2, colour, thickness, radius, filled_percent=0.5, current_image=True):
+        """
+        Draw a rounded box on the image
+
+        Adapted from: https://stackoverflow.com/questions/46036477/drawing-fancy-rectangle-around-face
+        """
+
+        # Set Points and the percentage between the corners to fill
+        point1 = Point(point1)
+        point2 = Point(point2)
+        depth = int(((abs(point2.x - point1.x) / 2) - radius) * filled_percent)
+
+        # If we are drawing on the ImageObject image set image to be self.image, else make a temp
+        if current_image:
+            image = self.image
+        else:
+            image = self._create_temp_image()
+
+        # Create Each of the four points
+        # Top left
+        cv2.line(image, (point1.x + radius, point1.y), (point1.x + radius + depth, point1.y), colour, thickness)
+        cv2.line(image, (point1.x, point1.y + radius), (point1.x, point1.y + radius + depth), colour, thickness)
+        cv2.ellipse(image, (point1.x + radius, point1.y + radius), (radius, radius), 180, 0, 90, colour, thickness)
+
+        # Top right
+        cv2.line(image, (point2.x - radius, point1.y), (point2.x - radius - depth, point1.y), colour, thickness)
+        cv2.line(image, (point2.x, point1.y + radius), (point2.x, point1.y + radius + depth), colour, thickness)
+        cv2.ellipse(image, (point2.x - radius, point1.y + radius), (radius, radius), 270, 0, 90, colour, thickness)
+
+        # Bottom left
+        cv2.line(image, (point1.x + radius, point2.y), (point1.x + radius + depth, point2.y), colour, thickness)
+        cv2.line(image, (point1.x, point2.y - radius), (point1.x, point2.y - radius - depth), colour, thickness)
+        cv2.ellipse(image, (point1.x + radius, point2.y - radius), (radius, radius), 90, 0, 90, colour, thickness)
+
+        # Bottom right
+        cv2.line(image, (point2.x - radius, point2.y), (point2.x - radius - depth, point2.y), colour, thickness)
+        cv2.line(image, (point2.x, point2.y - radius), (point2.x, point2.y - radius - depth), colour, thickness)
+        cv2.ellipse(image, (point2.x - radius, point2.y - radius), (radius, radius), 0, 0, 90, colour, thickness)
+        return image
 
     def shape_mask(self, lower_thresh, upper_thresh, new_image=False):
         """
