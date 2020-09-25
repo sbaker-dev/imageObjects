@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from imageObjects.common import Point
 
 
 class ContourObject:
@@ -13,35 +14,6 @@ class ContourObject:
         :type contour: numpy.ndarray
         """
         self.contour = contour
-
-    class _Point:
-        """
-        For properties that hold an [x,y] point it is useful to have the x and y exposed as elements
-        """
-        def __init__(self, cord):
-            if isinstance(cord[0], np.ndarray):
-                self.point = cord[0]
-            elif isinstance(cord[0], (int, float, np.intc, np.float32, np.float64)):
-                self.point = cord
-            else:
-                raise AttributeError(f"Cord {cord} of type {type(cord)} with elements {type(cord[0])},"
-                                     f" {type(cord[1])} failed")
-
-            self.x = self.point[0]
-            self.y = self.point[1]
-
-        def __repr__(self):
-            return str(self.point)
-
-        def __str__(self):
-            return str(self.point)
-
-        def __iter__(self):
-            yield self.x
-            yield self.y
-
-        def __getitem__(self, item):
-            return self.point[item]
 
     @property
     def x_list(self):
@@ -90,28 +62,28 @@ class ContourObject:
         """
         Left most point
         """
-        return self._Point([self.min_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.min_x])])
+        return Point([self.min_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.min_x])])
 
     @property
     def right(self):
         """
         Right most point
         """
-        return self._Point([self.max_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.max_x])])
+        return Point([self.max_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.max_x])])
 
     @property
     def top(self):
         """
         Top most point
         """
-        return self._Point([np.mean([cord.x for cord in self.xy_list if cord.y == self.min_y]), self.min_y])
+        return Point([np.mean([cord.x for cord in self.xy_list if cord.y == self.min_y]), self.min_y])
 
     @property
     def bottom(self):
         """
         Bottom most point
         """
-        return self._Point([np.mean([cord.x for cord in self.xy_list if cord.y == self.max_y]), self.max_y])
+        return Point([np.mean([cord.x for cord in self.xy_list if cord.y == self.max_y]), self.max_y])
 
     @property
     def width(self):
@@ -153,7 +125,7 @@ class ContourObject:
         """
         A list of points from the contour in list[Point] type
         """
-        return [self._Point(cord) for cord in self.contour]
+        return [Point(cord) for cord in self.contour]
 
     @property
     def bounding_box_points(self):
@@ -173,8 +145,7 @@ class ContourObject:
         """
         The centroid of the contour in terms of [x, y]
         """
-        return self._Point([int(self.moments['m10'] / self.moments['m00']),
-                            int(self.moments['m01'] / self.moments['m00'])])
+        return Point([int(self.moments['m10'] / self.moments['m00']), int(self.moments['m01'] / self.moments['m00'])])
 
     def scale(self, scale):
         """

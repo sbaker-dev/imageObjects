@@ -1,4 +1,5 @@
 from itertools import groupby, chain
+import numpy as np
 
 
 def flatten(list_of_lists):
@@ -66,3 +67,33 @@ def group_adjacent(list_to_group, distance=1):
     method that are within a given distance of each other
     """
     return [list(g) for k, g in groupby(list_to_group, key=Key(distance))]
+
+
+class Point:
+    """
+    For properties that hold an [x,y] point it is useful to have the x and y exposed as elements
+    """
+    def __init__(self, cord):
+        if isinstance(cord[0], np.ndarray):
+            self.point = cord[0]
+        elif isinstance(cord[0], (int, float, np.intc, np.float32, np.float64)):
+            self.point = cord
+        else:
+            raise AttributeError(f"Cord {cord} of type {type(cord)} with elements {type(cord[0])},"
+                                 f" {type(cord[1])} failed")
+
+        self.x = self.point[0]
+        self.y = self.point[1]
+
+    def __repr__(self):
+        return str(self.point)
+
+    def __str__(self):
+        return str(self.point)
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
+    def __getitem__(self, item):
+        return self.point[item]
