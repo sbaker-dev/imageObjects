@@ -5,7 +5,7 @@ LONG_DESCRIPTION = """
 # imageObjects
 
 This acts as an API of sorts for CV2, with some common methods cast into objects that work with images, contours and 
-more. 
+more. All source code at the [github repo page][repo]
 
 ### ContourObject
 open-cv python has contours, a extremely useful component that can be extracted from images. However, these components 
@@ -17,12 +17,18 @@ object which can then be manipulated.
 There are lots of common image functions that have been mapped to images, so that a loaded image can have these as 
 properties or as methods inherently rather than having to code them yourself.
 
-Source code can be found at the git hub page for [imageObjects][io]
-
 ### LineObject
 This will search for lines within an ImageObject which you can then utilise as a mask or manipulate with ImageObjects
 
-[io]: https://github.com/sbaker-dev/imageObjects
+### ImageMaker
+This can be used to make new ImageObjects, when you don't have anything to load or custom ImageObjects like text-boxes
+
+### common
+Whilst common is mostly designed for internal use, there are some common methods here that may save you re-defining them
+yourself or from other packages
+
+
+[repo]: https://github.com/sbaker-dev/imageObjects
 """
 
 LONG_DESCRIPTION_CONTENT_TYPE = "text/markdown"
@@ -32,7 +38,7 @@ MAINTAINER = 'Samuel Baker'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/contourObject"
-VERSION = "0.06.0"
+VERSION = "0.07.0"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [

@@ -1,7 +1,7 @@
 # imageObjects
 
 This acts as an API of sorts for CV2, with some common methods cast into objects that work with images, contours and 
-more. 
+more. All source code at the [github repo page][repo]
 
 ### ContourObject
 open-cv python has contours, a extremely useful component that can be extracted from images. However, these components 
@@ -22,3 +22,6 @@ This can be used to make new ImageObjects, when you don't have anything to load 
 ### common
 Whilst common is mostly designed for internal use, there are some common methods here that may save you re-defining them
 yourself or from other packages
+
+
+[repo]: https://github.com/sbaker-dev/imageObjects
