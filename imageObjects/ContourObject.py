@@ -15,6 +15,18 @@ class ContourObject:
         """
         self.contour = contour
 
+    def __repr__(self):
+        """
+        Return for debugging
+        """
+        return f"{self.area}"
+
+    def __str__(self):
+        """
+        Print return for code readability
+        """
+        return f"Area: {self.area}, Left: {self.left}, Right {self.right}, Top, {self.top}, Bottom {self.bottom}"
+
     @property
     def x_list(self):
         """
