@@ -1,7 +1,7 @@
-from imageObjects.ContourObject import ContourObject
-from imageObjects.common import Point
-from matplotlib import pyplot as plt
 from skimage.morphology import skeletonize as ski_ske
+from imageObjects.ContourObject import ContourObject
+from vectorObjects.DefinedVectors import Vector2D
+from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 import sys
@@ -415,8 +415,8 @@ class ImageObject:
         """
 
         # Set Points and the percentage between the corners to fill
-        point1 = Point(point1)
-        point2 = Point(point2)
+        point1 = Vector2D(point1)
+        point2 = Vector2D(point2)
         depth = int(((abs(point2.x - point1.x) / 2) - radius) * filled_percent)
 
         # If we are drawing on the ImageObject image set image to be self.image, else make a temp

@@ -1,6 +1,6 @@
-import cv2
+from vectorObjects.DefinedVectors import Vector2D
 import numpy as np
-from imageObjects.common import Point
+import cv2
 
 
 class ContourObject:
@@ -62,28 +62,28 @@ class ContourObject:
         """
         Left most point
         """
-        return Point([self.min_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.min_x])])
+        return Vector2D([self.min_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.min_x])])
 
     @property
     def right(self):
         """
         Right most point
         """
-        return Point([self.max_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.max_x])])
+        return Vector2D([self.max_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.max_x])])
 
     @property
     def top(self):
         """
         Top most point
         """
-        return Point([np.mean([cord.x for cord in self.xy_list if cord.y == self.min_y]), self.min_y])
+        return Vector2D([np.mean([cord.x for cord in self.xy_list if cord.y == self.min_y]), self.min_y])
 
     @property
     def bottom(self):
         """
         Bottom most point
         """
-        return Point([np.mean([cord.x for cord in self.xy_list if cord.y == self.max_y]), self.max_y])
+        return Vector2D([np.mean([cord.x for cord in self.xy_list if cord.y == self.max_y]), self.max_y])
 
     @property
     def width(self):
@@ -125,7 +125,7 @@ class ContourObject:
         """
         A list of points from the contour in list[Point] type
         """
-        return [Point(cord) for cord in self.contour]
+        return [Vector2D(cord) for cord in self.contour]
 
     @property
     def bounding_box_points(self):
@@ -145,7 +145,8 @@ class ContourObject:
         """
         The centroid of the contour in terms of [x, y]
         """
-        return Point([int(self.moments['m10'] / self.moments['m00']), int(self.moments['m01'] / self.moments['m00'])])
+        return Vector2D([int(self.moments['m10'] / self.moments['m00']),
+                         int(self.moments['m01'] / self.moments['m00'])])
 
     def scale(self, scale):
         """
