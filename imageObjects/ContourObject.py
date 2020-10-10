@@ -137,7 +137,7 @@ class ContourObject:
         """
         A list of points from the contour in list[Point] type
         """
-        return [Vector2D(cord) for cord in self.contour]
+        return [Vector2D(x, y) for cord in self.contour for (x, y) in cord]
 
     @property
     def bounding_box_points(self):
