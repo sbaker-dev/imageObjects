@@ -202,6 +202,17 @@ class ImageObject:
         """
         return self.image[:, column_index]
 
+    def extract_layer_contour(self):
+        """Extract the largest element of the image as a contour"""
+        contour_list = self.find_contours("external")
+        if len(contour_list) == 0:
+            print(f"Warning: No contours found!")
+        elif len(contour_list) == 1:
+            return contour_list[0]
+        else:
+            area = [c.area for c in contour_list]
+            return contour_list[area.index(max(area))]
+
     def change_row_colour(self, row_index, new_colour):
         """
         Change a whole row to a new colour
