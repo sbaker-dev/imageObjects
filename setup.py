@@ -38,17 +38,13 @@ MAINTAINER = 'Samuel Baker'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/contourObject"
-VERSION = "0.09.0"
+VERSION = "0.09.1"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
     'opencv-python',
     'numpy',
     'matplotlib', 'scikit-image', 'vectorObjects']
-
-PACKAGES = [
-    "imageObjects",
-]
 
 CLASSIFIERS = [
     'Programming Language :: Python :: 3.7',
@@ -58,7 +54,7 @@ CLASSIFIERS = [
 
 if __name__ == "__main__":
 
-    from setuptools import setup
+    from setuptools import setup, find_packages
 
     import sys
 
@@ -79,6 +75,6 @@ if __name__ == "__main__":
         download_url=DOWNLOAD_URL,
         python_requires=PYTHON_REQUIRES,
         install_requires=INSTALL_REQUIRES,
-        packages=PACKAGES,
+        packages=find_packages(),
         classifiers=CLASSIFIERS
     )
