@@ -106,6 +106,12 @@ class ImageObject:
         else:
             return self.image.shape[2]
 
+    def count_colour_pixels(self, colour):
+        """
+        Count the number of pixels equal to a certain colour
+        """
+        return np.sum(self.image == colour)
+
     @property
     def empty(self):
         """
@@ -160,9 +166,9 @@ class ImageObject:
         duplicated.
         """
         if colour and self.channels < 3:
-            image = self.colour_covert(new_image=True).image
+            image = self.change_to_colour(new_image=True).image
         elif not colour and self.channels > 2:
-            image = self.mono_convert(new_image=True).image
+            image = self.change_to_mono(new_image=True).image
         else:
             image = self.image.copy()
 
@@ -190,52 +196,35 @@ class ImageObject:
         For jupyter we don't want to create a new window, and instead want to show an image via matplotlib.
         """
         if self.channels > 1:
-            plt.imshow(self.bgr_to_rgb(new_image=True).image)
+            plt.imshow(self.change_bgr_to_rgb(new_image=True).image)
         else:
             plt.imshow(self.image, cmap="gray", vmin=0, vmax=255)
         plt.title(title)
         plt.show()
 
-    def bgr_to_rgb(self, new_image=False):
+    def change_bgr_to_rgb(self, new_image=False):
         """
         cv2 uses bgr rather than rgb, but this can be changed via this method
         """
         return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB), new_image)
 
-    def colour_covert(self, new_image=False):
+    def change_to_colour(self, new_image=False):
         """
         Convert image to colour
         """
         return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR), new_image)
+
+    def change_to_mono(self, new_image=False):
+        """
+        Convert to a mono channel gray image
+        """
+        return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY), new_image)
 
     def change_pixel_colour(self, pixel_column_index, pixel_row_index, colour):
         """
         Change a specific pixel to a certain colour via column and row indexes
         """
         self.image[pixel_column_index, pixel_row_index] = colour
-
-    def extract_row(self, row_index):
-        """
-        Extract the numpy array of an image row
-        """
-        return self.image[row_index, :]
-
-    def extract_column(self, column_index):
-        """
-        Extract the numpy array of an image column
-        """
-        return self.image[:, column_index]
-
-    def extract_layer_contour(self):
-        """Extract the largest element of the image as a contour"""
-        contour_list = self.find_contours("external")
-        if len(contour_list) == 0:
-            print(f"Warning: No contours found!")
-        elif len(contour_list) == 1:
-            return contour_list[0]
-        else:
-            area = [c.area for c in contour_list]
-            return contour_list[area.index(max(area))]
 
     def change_row_colour(self, row_index, new_colour):
         """
@@ -249,12 +238,6 @@ class ImageObject:
         """
         self.image[:, column_index] = new_colour
 
-    def mono_convert(self, new_image=False):
-        """
-        Convert to a mono channel gray image
-        """
-        return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY), new_image)
-
     def change_a_colour(self, current_colour, new_colour, new_image=False):
         """
         Change all current pixels of one bgr colour to a different bgr colour
@@ -266,11 +249,18 @@ class ImageObject:
         else:
             self.image[np.where((self.image == [current_colour]).all(axis=2))] = [new_colour]
 
-    def invert_image(self, new_image=False):
+    def invert(self, new_image=False):
         """
         Invert the current image
         """
         return self._update_or_export(cv2.bitwise_not(self.image), new_image)
+
+    def normalise(self, new_image=False):
+        """
+        Use Cv2 normalize to set all images to be 0's or 1's.
+        """
+        return self._update_or_export(cv2.normalize(self._create_temp_image(colour=False), None, alpha=0, beta=1,
+                                                    norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F), new_image)
 
     def morphology(self, morph_type, kernel_vertical, kernel_horizontal, kernel_type="rect", new_image=False):
         """
@@ -288,11 +278,11 @@ class ImageObject:
         kernel_values = {"rect": cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_vertical, kernel_horizontal)),
                          "cross": cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_vertical, kernel_horizontal)),
                          "ellipse": cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_vertical, kernel_horizontal))}
-        kernel = self._key_return("morphology", "kernel_type", kernel_values, kernel_type)
+        kernel = key_return("morphology", "kernel_type", kernel_values, kernel_type)
 
         # Set morphology type
         morph_values = {"erode": 0, "dilate": 1, "open": 2, "close": 3, "gradient": 4, "tophat": 5, "blackhat": 6}
-        morph_type = self._key_return("morphology", "morph_type", morph_values, morph_type)
+        morph_type = key_return("morphology", "morph_type", morph_values, morph_type)
 
         if morph_type == 0:
             morphed = cv2.erode(self.image, kernel)
@@ -306,94 +296,25 @@ class ImageObject:
 
         return self._update_or_export(morphed, new_image)
 
-    def find_contours(self, retrieval_mode, simple_method=True, hierarchy_return=False):
-        """
-        Find contours within the current image. Since find contours only works on mono channel images, if the current
-        image is a colour image a new image is create that will not change the one in memory so it is not necessary to
-        change the image to gray manually.
-
-        retrieval_mode
-        ---------------
-        retrieval_mode can take on of the following values: external, list, ccomp, tree, floodfill
-
-        simple_method
-        --------------
-        Simple methods will only use the extremes, so for a straight line it will store the first and last point. If you
-        turn this off it will keep all the points on the line but this can lead to a very large over head so it is not
-        recommend unless you have a specific need for all those points.
-
-        hierarchy_return
-        ----------------
-        If you don't want to return the hierarchy you can leave this as default, otherwise set it to true
-        """
-        # Set retrieval mode
-        retrieval_values = {"external": 0, "list": 1, "ccomp": 2, "tree": 3, "floodfill": 4}
-        retrieval = self._key_return("find_contours", "retrieval_mode", retrieval_values, retrieval_mode)
-
-        # Setup of extraction methods
-        if simple_method:
-            approx = cv2.CHAIN_APPROX_SIMPLE
-        else:
-            approx = cv2.CHAIN_APPROX_NONE
-
-        # Look for contours base on the setup
-        contours, hierarchy = cv2.findContours(self._create_temp_image(colour=False), retrieval, approx)
-
-        # If we find any contours, return the contours and the hierarchy if requested
-        if len(contours) > 0:
-            if hierarchy_return:
-                return [ContourObject(cnt) for cnt in contours], hierarchy
-            else:
-                return [ContourObject(cnt) for cnt in contours]
-        else:
-            if hierarchy_return:
-                return None, None
-            else:
-                return None
-
-    def alpha_mask(self, new_image=False):
-        """
-        Takes a 4 channel image and returns the alpha channel as a mask
-        """
-        _, mask = cv2.threshold(self.image[:, :, 3], 0, 255, cv2.THRESH_BINARY)
-        return self._update_or_export(mask, new_image)
-
     def blank_like(self, new_image=False):
         """
         Create a blank image of the same dimensions as the image
         """
         return self._update_or_export(np.zeros_like(self.image), new_image)
 
-    def inset_border(self, colour=(0, 0, 0), size=1, new_image=False):
+    def draw_border(self, colour=(0, 0, 0), size=1, new_image=False):
         """
         This function is overlays a hollow square on the image to create an inset border
         """
         return self._update_or_export(cv2.rectangle(self.image.copy(), (0, 0), (self.width, self.height), colour, size),
                                       new_image)
 
-    def inset_rounded_border(self, colour, thickness, radius, fill_percentage, new_image=False):
+    def draw_rounded_border(self, colour, thickness, radius, fill_percentage, new_image=False):
         """
         Draw a rounded border on the edge of the image
         """
-        return self._update_or_export(self.draw_rounded_box((0, 0), (self.width, self.height), colour, thickness,
-                                                            radius, fill_percentage, False), new_image)
-
-    def normalise(self, new_image=False):
-        """
-        Use Cv2 normalize to set all images to be 0's or 1's.
-        """
-        return self._update_or_export(cv2.normalize(self._create_temp_image(colour=False), None, alpha=0, beta=1,
-                                                    norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F), new_image)
-
-    def skeletonize_points(self, method="lee"):
-        """
-        Extract the points that make up the skeleton of the image via skimage
-        """
-        # Extract the binary points for a normalised image
-        binary_points = ski_ske(self.normalise(new_image=True).image, method=method)
-
-        # Return the list of points
-        return [[ci, ri] for ri, row in enumerate(binary_points) for ci, column in enumerate(row) if column]
+        return self._update_or_export(draw_rounded_box(self._create_temp_image(), (0, 0), (self.width, self.height),
+                                                       colour, thickness, radius, fill_percentage), new_image)
 
     def crop(self, height_min, height_max, width_min, width_max, relative=True, new_image=False):
         """
@@ -442,53 +363,13 @@ class ImageObject:
 
         self._update_or_export(output_border, new_image)
 
-    def draw_rounded_box(self, point1, point2, colour, thickness, radius, filled_percent=0.5, current_image=True):
-        """
-        Draw a rounded box on the image
-
-        Adapted from: https://stackoverflow.com/questions/46036477/drawing-fancy-rectangle-around-face
-        """
-
-        # Set Points and the percentage between the corners to fill
-        point1 = Vector2D(point1)
-        point2 = Vector2D(point2)
-        depth = int(((abs(point2.x - point1.x) / 2) - radius) * filled_percent)
-
-        # If we are drawing on the ImageObject image set image to be self.image, else make a temp
-        if current_image:
-            image = self.image
-        else:
-            image = self._create_temp_image()
-
-        # Create Each of the four points
-        # Top left
-        cv2.line(image, (point1.x + radius, point1.y), (point1.x + radius + depth, point1.y), colour, thickness)
-        cv2.line(image, (point1.x, point1.y + radius), (point1.x, point1.y + radius + depth), colour, thickness)
-        cv2.ellipse(image, (point1.x + radius, point1.y + radius), (radius, radius), 180, 0, 90, colour, thickness)
-
-        # Top right
-        cv2.line(image, (point2.x - radius, point1.y), (point2.x - radius - depth, point1.y), colour, thickness)
-        cv2.line(image, (point2.x, point1.y + radius), (point2.x, point1.y + radius + depth), colour, thickness)
-        cv2.ellipse(image, (point2.x - radius, point1.y + radius), (radius, radius), 270, 0, 90, colour, thickness)
-
-        # Bottom left
-        cv2.line(image, (point1.x + radius, point2.y), (point1.x + radius + depth, point2.y), colour, thickness)
-        cv2.line(image, (point1.x, point2.y - radius), (point1.x, point2.y - radius - depth), colour, thickness)
-        cv2.ellipse(image, (point1.x + radius, point2.y - radius), (radius, radius), 90, 0, 90, colour, thickness)
-
-        # Bottom right
-        cv2.line(image, (point2.x - radius, point2.y), (point2.x - radius - depth, point2.y), colour, thickness)
-        cv2.line(image, (point2.x, point2.y - radius), (point2.x, point2.y - radius - depth), colour, thickness)
-        cv2.ellipse(image, (point2.x - radius, point2.y - radius), (radius, radius), 0, 0, 90, colour, thickness)
-        return image
-
-    def shape_mask(self, lower_thresh, upper_thresh, new_image=False):
+    def mask_on_colour_range(self, lower_thresh, upper_thresh, new_image=False):
         """
         Isolate shapes within a given bgr range.
         """
         return self._update_or_export(cv2.inRange(self._create_temp_image(), lower_thresh, upper_thresh), new_image)
 
-    def mask_image(self, mask, new_image=False):
+    def mask_on_image(self, mask, new_image=False):
         """
         This will use another image as a mask for this image. Can be an ImageObject or any cv2 compatible image.
         """
@@ -499,25 +380,32 @@ class ImageObject:
 
         return self._update_or_export(masked, new_image)
 
-    def binary_threshold(self, binary_threshold, binary_mode="binary", binary_max=255, new_image=False):
+    def mask_alpha(self, new_image=False):
+        """
+        Takes a 4 channel image and returns the alpha channel as a mask
+        """
+        _, mask = cv2.threshold(self.image[:, :, 3], 0, 255, cv2.THRESH_BINARY)
+        return self._update_or_export(mask, new_image)
+
+    def threshold_binary(self, binary_threshold, binary_mode="binary", binary_max=255, new_image=False):
         """
         Create or push the image to a binary black on white image based on a threshold of mono pixel values.
         """
         binary_values = {"binary": 0, "binary_inv": 1, "trunc": 2, "to_zero": 3, "to_zero_inv": 4}
-        binary_mode = self._key_return("binary_threshold", "binary_mode", binary_values, binary_mode)
+        binary_mode = key_return("binary_threshold", "binary_mode", binary_values, binary_mode)
 
         _, threshold_image = cv2.threshold(self.image, binary_threshold, binary_max, binary_mode)
 
         return self._update_or_export(threshold_image, new_image)
 
-    def adaptive_threshold(self, assignment_value=255, gaussian_adaptive=True, binary_mode="binary",
+    def threshold_adaptive(self, assignment_value=255, gaussian_adaptive=True, binary_mode="binary",
                            neighborhood_size=51, subtract_constant=20, new_image=False):
         """
         This will apply by default a gaussian adaptive threshold using the binary method
         """
         # Set binary mode
         binary_values = {"binary": 0, "binary_inv": 1, "trunc": 2, "to_zero": 3, "to_zero_inv": 4}
-        binary_mode = self._key_return("adaptive_threshold", "binary_mode", binary_values, binary_mode)
+        binary_mode = key_return("adaptive_threshold", "binary_mode", binary_values, binary_mode)
 
         # Set adaptive method
         if gaussian_adaptive:
@@ -529,46 +417,6 @@ class ImageObject:
                                        binary_mode, neighborhood_size, subtract_constant)
 
         return self._update_or_export(thresh, new_image)
-
-    def calculate_alpha_beta(self, clip_hist_percent=1):
-        """
-        This calculates the current alpha and beta values from an image
-
-        From https://stackoverflow.com/questions/56905592/automatic-contrast-and-brightness-adjustment-of-a-color-photo-
-        of-a-sheet-of-paper
-        """
-        gray = self._create_temp_image(colour=False)
-
-        hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
-        hist_size = len(hist)
-
-        # Calculate cumulative distribution from the histogram
-        previous = float(hist[0])
-        accumulator = [previous]
-        for index in range(1, hist_size):
-            previous = previous + float(hist[index])
-            accumulator.append(previous)
-
-        # Locate points to clip
-        maximum = accumulator[-1]
-        clip_hist_percent *= (maximum / 100.0)
-        clip_hist_percent /= 2.0
-
-        # Locate left cut
-        minimum_gray = 0
-        while accumulator[minimum_gray] < clip_hist_percent:
-            minimum_gray += 1
-
-        # Locate right cut
-        maximum_gray = hist_size - 1
-        while accumulator[maximum_gray] >= (maximum - clip_hist_percent):
-            maximum_gray -= 1
-
-        # Calculate alpha and beta values
-        alpha = 255 / (maximum_gray - minimum_gray)
-        beta = -minimum_gray * alpha
-
-        return alpha, beta
 
     def perspective_transform(self, clockwise_points, new_image=False):
         """

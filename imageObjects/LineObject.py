@@ -1,5 +1,6 @@
-from imageObjects.ImageObject import ImageObject
-from imageObjects import common as cf
+from imageObjects.Support import group_adjacent, flatten
+from imageObjects import ImageObject
+
 import numpy as np
 import cv2
 import sys
@@ -8,7 +9,7 @@ import sys
 class LineObject:
     def __init__(self, image, target_colour, min_length, mark_colour=180, block_out=None, warnings=True):
         if isinstance(image, ImageObject):
-            self.img = image.shape_mask(target_colour, target_colour, new_image=True)
+            self.img = image.mask_on_colour_range(target_colour, target_colour, new_image=True)
             self.lines = None
 
             self._mark = mark_colour
@@ -45,8 +46,8 @@ class LineObject:
         # the adjacent groups meet the minimum length requirement, draw them. Once all column are complete, isolate
         # the lines
         for i in range(self.img.width):
-            [self._draw_vertical_lines(i, y_indexes) for y_indexes in cf.group_adjacent(self._isolate_column(i))]
-        self.img.shape_mask(self._mark_bgr, self._mark_bgr)
+            [self._draw_vertical_lines(i, y_indexes) for y_indexes in group_adjacent(self._isolate_column(i))]
+        self.img.mask_on_colour_range(self._mark_bgr, self._mark_bgr)
 
         # If we want to enlarge the lines a bit, we can do so via drawing them larger via draw_contours.
         if adjacent_pixels:
@@ -72,8 +73,8 @@ class LineObject:
         # For each row of the image, find how many of the current row are not zero, grouping them by adjacency. If the
         # adjacent groups meet the minimum length requirement, draw them. Once all rows are complete, isolate the lines
         for i in range(self.img.height):
-            [self._draw_horizontal_lines(i, x_indexes) for x_indexes in cf.group_adjacent(self._isolate_row(i))]
-        self.img.shape_mask(self._mark_bgr, self._mark_bgr)
+            [self._draw_horizontal_lines(i, x_indexes) for x_indexes in group_adjacent(self._isolate_row(i))]
+        self.img.mask_on_colour_range(self._mark_bgr, self._mark_bgr)
 
         # If we want to enlarge the lines a bit, we can do so via drawing them larger via draw_contours.
         if adjacent_pixels:
@@ -89,7 +90,7 @@ class LineObject:
         """
         Isolate gaps by the absence of pixels between two sets of found lines. Return the maximum gap.
         """
-        gap_list = [[min(g), max(g)] for g in cf.group_adjacent(row)]
+        gap_list = [[min(g), max(g)] for g in group_adjacent(row)]
         if len(gap_list) > 1:
             return max([gap_list[i][0] - gap_list[i - 1][1] for i, gap in enumerate(gap_list) if i > 0])
         else:
@@ -99,13 +100,13 @@ class LineObject:
         """
         Isolate the non zero indexes from the current row as a list
         """
-        return cf.flatten(np.asarray((self.img.image[index, :]).nonzero()))
+        return flatten(np.asarray((self.img.image[index, :]).nonzero()))
 
     def _isolate_column(self, index):
         """
         Isolate the non zero indexes from the current column as a list
         """
-        return cf.flatten(np.asarray((self.img.image[:, index]).nonzero()))
+        return flatten(np.asarray((self.img.image[:, index]).nonzero()))
 
     def _draw_vertical_lines(self, i, y_indexes):
         """
