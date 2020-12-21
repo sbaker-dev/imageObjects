@@ -16,12 +16,10 @@ properties or as methods inherently rather than having to code them yourself.
 ### LineObject
 This will search for lines within an ImageObject which you can then utilise as a mask or manipulate with ImageObjects
 
-### ImageMaker
-This can be used to make new ImageObjects, when you don't have anything to load or custom ImageObjects like text-boxes
 
-### common
-Whilst common is mostly designed for internal use, there are some common methods here that may save you re-defining them
-yourself or from other packages
+###### Major revisions
+
+* version 0.09.0 wide scale renaming, project structure, and defaults
 
 
 [repo]: https://github.com/sbaker-dev/imageObjects
