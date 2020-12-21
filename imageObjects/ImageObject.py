@@ -1,6 +1,5 @@
-from skimage.morphology import skeletonize as ski_ske
-from imageObjects.ContourObject import ContourObject
-from vectorObjects.DefinedVectors import Vector2D
+from imageObjects.Support import *
+
 from matplotlib import pyplot as plt
 import numpy as np
 import cv2
@@ -117,16 +116,41 @@ class ImageObject:
         else:
             return False
 
-    @staticmethod
-    def _key_return(method_name, dict_name, dict_of_values, key):
+    def extract_alpha_beta(self, clip_hist_percent=1):
         """
-        Many of our operations require a mode that is set via a dict, this will return the mode requested if it exists
-        or raise a key error with information to the user of what they submitted vs what was expected.
+        Extract the alpha and beta of the image
         """
-        try:
-            return dict_of_values[key]
-        except KeyError:
-            raise KeyError(f"{method_name}s {dict_name} only takes {list(dict_of_values.keys())} but found {key}")
+        return calculate_alpha_beta(self._create_temp_image(False), clip_hist_percent)
+
+    def extract_contours(self, retrieval_mode, simple_method=True, hierarchy_return=False):
+        """
+        Extract the contours from the image
+        """
+        return find_contours(self._create_temp_image(False), retrieval_mode, simple_method, hierarchy_return)
+
+    def extract_defining_contour(self):
+        """
+        Extract the largest contour from all contours in the image
+        """
+        return largest_contour(self._create_temp_image(False))
+
+    def extract_column(self, column_index):
+        """
+        Extract the numpy array of an image column
+        """
+        return self.image[:, column_index]
+
+    def extract_row(self, row_index):
+        """
+        Extract the numpy array of an image row
+        """
+        return self.image[row_index, :]
+
+    def extract_skeletonized_points(self, skeletonize_method="lee"):
+        """
+        Extract the skeletonized points from the image
+        """
+        return skeletonize_points(self.normalise(True), skeletonize_method)
 
     def _create_temp_image(self, colour=True):
         """
