@@ -156,7 +156,7 @@ class ImageObject:
         """
         Extract the skeletonized points from the image
         """
-        return skeletonize_points(self.normalise(True), skeletonize_method)
+        return skeletonize_points(self.normalise(True).image, skeletonize_method)
 
     def _create_temp_image(self, colour=True):
         """
