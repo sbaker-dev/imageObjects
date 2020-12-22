@@ -1,4 +1,5 @@
 from vectorObjects.DefinedVectors import Vector2D
+from shapely.geometry import Polygon
 import numpy as np
 import cv2
 
@@ -151,6 +152,18 @@ class ContourObject:
         x_list = [point[0] for point in cv2.boxPoints(cv2.minAreaRect(self.contour))]
         y_list = [point[1] for point in cv2.boxPoints(cv2.minAreaRect(self.contour))]
         return [[x, y] for x, y in zip(x_list, y_list)]
+
+    def as_polygon(self):
+        """
+        If working with geo-spatial images, we may wish to return a contour as a polygon. This will return a Shapely
+        Polygon class from the current ContourObject
+
+        :return: A shapely Polygon
+        :rtype: Polygon
+        """
+        xy_list = self.xy_list
+        assert len(xy_list) > 3, f"A polygon Requires a minimum of three points yet was passed {len(xy_list)}"
+        return Polygon([cord.x, cord.y] for cord in xy_list)
 
     @property
     def centroid(self):
