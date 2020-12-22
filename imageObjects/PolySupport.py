@@ -60,8 +60,11 @@ class PolySupport:
             return [getattr(ContourObject(points_to_array(part)), position)
                     for part in map_dict["coordinates"] if len(part) > 1]
 
-        elif (map_dict["type"] == "LineString") or (map_dict["type"] == "Point"):
+        elif map_dict["type"] == "LineString":
             return [getattr(ContourObject(points_to_array(map_dict["coordinates"])), position)]
+
+        elif map_dict["type"] == "Point":
+            return [getattr(ContourObject(points_to_array([map_dict["coordinates"]])), position)]
 
         else:
             raise Exception(f"Unexpected type {map_dict['type']} found within _extract_extreme_position")
