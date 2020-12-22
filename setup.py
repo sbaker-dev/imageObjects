@@ -38,13 +38,18 @@ MAINTAINER = 'Samuel Baker'
 MAINTAINER_EMAIL = 'samuelbaker.researcher@gmail.com'
 LICENSE = 'MIT'
 DOWNLOAD_URL = "https://github.com/sbaker-dev/contourObject"
-VERSION = "0.09.2"
+VERSION = "0.10.0"
 PYTHON_REQUIRES = ">=3.6"
 
 INSTALL_REQUIRES = [
     'opencv-python',
     'numpy',
-    'matplotlib', 'scikit-image', 'vectorObjects']
+    'matplotlib',
+    'scikit-image',
+    'vectorObjects',
+    'shapely',
+    'scipy'
+]
 
 CLASSIFIERS = [
     'Programming Language :: Python :: 3.7',
