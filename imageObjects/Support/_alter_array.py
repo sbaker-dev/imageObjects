@@ -1,4 +1,8 @@
+from vectorObjects.DefinedVectors import Vector2D
 from itertools import groupby, chain
+from collections import Counter
+import scipy.interpolate as si
+import numpy as np
 
 
 def flatten(list_of_lists):
@@ -66,3 +70,89 @@ def group_adjacent(list_to_group, distance=1):
     method that are within a given distance of each other
     """
     return [list(g) for k, g in groupby(list_to_group, key=Key(distance))]
+
+
+def points_to_array(points_list):
+    """Convert Shapely cords to a ContourObject readable numpy array"""
+    return np.array([[cord] for cord in points_list])
+
+
+def standardise_2d(point_list, y_flip=False):
+    """
+    Ensure sure all points are of the type Vector2D, Flip them if required.
+    """
+    if y_flip:
+        return [Vector2D(x, -y) for (x, y) in point_list]
+    else:
+        return [Vector2D(x, y) for (x, y) in point_list]
+
+
+def in_between_list(points, subdivision):
+    """
+    This will in-between a list of points, where it will add a number of points equal to subdivisions between each point
+
+    :param points: A list of points, that may be Tuples or Lists or (x, y) or Vector2D.
+    :type points: list
+
+    :param subdivision: The number of points to add between each set of points
+    :type subdivision: int
+
+    :return: A list of Vector2D points
+    :rtype: list[Vector2D]
+    """
+
+    # Ensure all points are Vector2D
+    points = standardise_2d(points)
+
+    # Create a number of points equal to subdivision between each point
+    sub_divided = []
+    for index, point in enumerate(points):
+        if index == 0:
+            sub_divided.append(point)
+        else:
+            for sub in point.sub_divide(points[index - 1], subdivision, from_self=False, include_points=False):
+                sub_divided.append(sub)
+            sub_divided.append(point)
+    return sub_divided
+
+
+def b_spline(cv, n=100, degree=3):
+    """
+    source: https://stackoverflow.com/questions/28279060/splines-with-python-using-control-knots-and-endpoints
+
+    Calculate n samples on a bspline
+
+        cv :      Array ov control vertices
+        n  :      Number of samples to return
+        degree:   Curve degree
+
+    """
+    cv = np.asarray(cv)
+    count = cv.shape[0]
+
+    # Prevent degree from exceeding count-1, otherwise splev will crash
+    degree = np.clip(degree, 1, count-1)
+
+    # Calculate knot vector
+    kv = np.array([0]*degree + [i for i in range(count-degree+1)] + [count-degree]*degree, dtype='int')
+
+    # Calculate query range
+    u = np.linspace(0, (count-degree), n)
+
+    # Calculate result
+    return np.array(si.splev(u, (kv, cv.T, degree))).T.tolist()
+
+
+def flip_list(list_of_lists, length_return=False):
+    """
+    This will take a list of lists, and then flip it. It requires all sub lists to be the same length.
+    """
+    list_of_keys = Counter([len(sub_list) for sub_list in list_of_lists])
+    sub_key_length = list(list_of_keys.keys())
+
+    assert len(list_of_keys.keys()) == 1, f"Sub lists should be all of the same length yet found lengths" \
+                                          f"{sub_key_length}"
+    if length_return:
+        return [[sub[i] for sub in list_of_lists] for i in range(sub_key_length[0])], sub_key_length[0]
+    else:
+        return [[sub[i] for sub in list_of_lists] for i in range(sub_key_length[0])]
