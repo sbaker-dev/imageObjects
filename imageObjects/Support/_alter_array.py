@@ -101,9 +101,6 @@ def in_between_list(points, subdivision):
     :rtype: list[Vector2D]
     """
 
-    # Ensure all points are Vector2D
-    points = standardise_2d(points)
-
     # Create a number of points equal to subdivision between each point
     sub_divided = []
     for index, point in enumerate(points):
