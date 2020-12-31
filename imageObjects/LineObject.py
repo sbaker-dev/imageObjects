@@ -1,6 +1,6 @@
-from imageObjects.Support import group_adjacent, flatten
 from imageObjects import ImageObject
 
+from miscSupports import group_adjacent, flatten
 import numpy as np
 import cv2
 import sys

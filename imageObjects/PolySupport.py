@@ -1,7 +1,7 @@
-from imageObjects.Support import flatten, points_to_array
 from imageObjects import ContourObject
 
 from shapely.geometry import Polygon, GeometryCollection, mapping
+from miscSupports import flatten, shapely_points_to_array
 from vectorObjects.DefinedVectors import Vector2D
 
 
@@ -47,7 +47,7 @@ class PolySupport:
         # from this list of points
         points_list = flatten(points_list)
         if merge_nested:
-            return getattr(ContourObject(points_to_array(points_list)), position)
+            return getattr(ContourObject(shapely_points_to_array(points_list)), position)
         else:
             return points_list
 
@@ -57,14 +57,14 @@ class PolySupport:
         map_dict = mapping(shape)
 
         if map_dict["type"] == "Polygon":
-            return [getattr(ContourObject(points_to_array(part)), position)
+            return [getattr(ContourObject(shapely_points_to_array(part)), position)
                     for part in map_dict["coordinates"] if len(part) > 1]
 
         elif map_dict["type"] == "LineString":
-            return [getattr(ContourObject(points_to_array(map_dict["coordinates"])), position)]
+            return [getattr(ContourObject(shapely_points_to_array(map_dict["coordinates"])), position)]
 
         elif map_dict["type"] == "Point":
-            return [getattr(ContourObject(points_to_array([map_dict["coordinates"]])), position)]
+            return [getattr(ContourObject(shapely_points_to_array([map_dict["coordinates"]])), position)]
 
         else:
             raise Exception(f"Unexpected type {map_dict['type']} found within _extract_extreme_position")
