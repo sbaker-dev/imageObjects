@@ -316,6 +316,14 @@ class ImageObject:
         return self._update_or_export(draw_rounded_box(self._create_temp_image(), (0, 0), (self.width, self.height),
                                                        colour, thickness, radius, fill_percentage), new_image)
 
+    def draw_line(self, point1, point2, colour, thickness, new_image=False):
+        """
+        Draw a line on the image between points 1-2 of colour and thickness provided
+        """
+        temp = self._create_temp_image()
+        return self._update_or_export(cv2.line(temp, (point1.x, point1.y), (point2.x, point2.y), colour, thickness),
+                                      new_image)
+
     def draw_contour(self, contours, colour, thickness, new_image=False):
         """
         Draws a ContourObjects, or list/tuple of ContourObjects, onto the image
@@ -324,12 +332,12 @@ class ImageObject:
 
         if isinstance(contours, ContourObject):
             cv2.drawContours(temp, [contours.contour], -1, colour, thickness)
-            self._update_or_export(temp, new_image)
+            return self._update_or_export(temp, new_image)
 
         elif isinstance(contours, (list, tuple)) and all(isinstance(v, ContourObject) for v in contours):
             for c in contours:
                 cv2.drawContours(self.image.copy(), [c.contour], -1, colour, thickness)
-            self._update_or_export(temp, new_image)
+            return self._update_or_export(temp, new_image)
 
         else:
             raise TypeError(f"draw_contours takes a ContourObject or a list/tuple of ContourObject yet found "
