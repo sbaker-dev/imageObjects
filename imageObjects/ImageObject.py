@@ -316,6 +316,25 @@ class ImageObject:
         return self._update_or_export(draw_rounded_box(self._create_temp_image(), (0, 0), (self.width, self.height),
                                                        colour, thickness, radius, fill_percentage), new_image)
 
+    def draw_contour(self, contours, colour, thickness, new_image=False):
+        """
+        Draws a ContourObjects, or list/tuple of ContourObjects, onto the image
+        """
+        temp = self._create_temp_image()
+
+        if isinstance(contours, ContourObject):
+            cv2.drawContours(temp, [contours.contour], -1, colour, thickness)
+            self._update_or_export(temp, new_image)
+
+        elif isinstance(contours, (list, tuple)) and all(isinstance(v, ContourObject) for v in contours):
+            for c in contours:
+                cv2.drawContours(self.image.copy(), [c.contour], -1, colour, thickness)
+            self._update_or_export(temp, new_image)
+
+        else:
+            raise TypeError(f"draw_contours takes a ContourObject or a list/tuple of ContourObject yet found "
+                            f"{type(contours)}")
+
     def crop(self, height_min, height_max, width_min, width_max, relative=True, new_image=False):
         """
         Cropping can be relative or actual. If relative, each value represents a 0.0 - 1.0 range that acts as a
