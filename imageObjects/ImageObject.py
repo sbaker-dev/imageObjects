@@ -208,7 +208,7 @@ class ImageObject:
         """
         Write the image called 'name', to a 'directory', of type 'write_type'
         """
-        cv2.imwrite(Path(directory, f"{name}.{write_type}"), self.image)
+        cv2.imwrite(str(Path(directory, f"{name}.{write_type}").absolute()), self.image)
 
     def change_bgr_to_rgb(self, new_image=False):
         """
