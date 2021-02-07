@@ -1,4 +1,5 @@
 from imageObjects.Support import *
+from imageObjects.Support import to_vector_2d
 
 from matplotlib import pyplot as plt
 import numpy as np
@@ -321,8 +322,17 @@ class ImageObject:
         Draw a line on the image between points 1-2 of colour and thickness provided
         """
         temp = self._create_temp_image()
+        point1, point2 = to_vector_2d(point1), to_vector_2d(point2)
         return self._update_or_export(cv2.line(temp, (point1.x, point1.y), (point2.x, point2.y), colour, thickness),
                                       new_image)
+
+    def draw_circle(self, point, colour, radius, thickness=-1, new_image=False):
+        """
+        Draw a circle on the image at 'point' of colour and radius provided, allow for changing thickness
+        """
+        temp = self._create_temp_image()
+        point = to_vector_2d(point)
+        return self._update_or_export(cv2.circle(temp, (point.x, point.y), radius, colour, thickness), new_image)
 
     def draw_contour(self, contours, colour, thickness, new_image=False):
         """
