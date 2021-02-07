@@ -2,6 +2,7 @@ from imageObjects.Support import *
 from imageObjects.Support import to_vector_2d
 
 from matplotlib import pyplot as plt
+from pathlib import Path
 import numpy as np
 import cv2
 import sys
@@ -202,6 +203,12 @@ class ImageObject:
             plt.imshow(self.image, cmap="gray", vmin=0, vmax=255)
         plt.title(title)
         plt.show()
+
+    def write_to_file(self, directory, name, write_type="png"):
+        """
+        Write the image called 'name', to a 'directory', of type 'write_type'
+        """
+        cv2.imwrite(Path(directory, f"{name}.{write_type}"), self.image)
 
     def change_bgr_to_rgb(self, new_image=False):
         """
