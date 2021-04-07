@@ -341,6 +341,15 @@ class ImageObject:
         point = to_vector_2d(point)
         return self._update_or_export(cv2.circle(temp, (point.x, point.y), radius, colour, thickness), new_image)
 
+    def draw_rectangle(self, top_left_point, bottom_right_point, colour, thickness=-1, new_image=False):
+        """
+        Draw a rectangle on the image using its top left and bottom right points
+        """
+        temp = self._create_temp_image()
+        top_left, bottom_right = to_vector_2d(top_left_point), to_vector_2d(bottom_right_point)
+        return self._update_or_export(cv2.rectangle(temp, (top_left.x, top_left.y), (bottom_right.x, bottom_right.y),
+                                                    colour, thickness), new_image)
+
     def draw_contour(self, contours, colour, thickness, new_image=False):
         """
         Draws a ContourObjects, or list/tuple of ContourObjects, onto the image
