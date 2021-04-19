@@ -124,6 +124,21 @@ class ImageObject:
         else:
             return False
 
+    def assign_alpha_channel(self, alpha):
+        """
+        If an image has been converted to alpha, it will not have alpha data. You can assign alpha channel data via this
+        method
+        """
+
+        if isinstance(alpha, ImageObject):
+            self.image[:, :, 3] = alpha.image
+
+        elif isinstance(alpha, np.ndarray):
+            self.image[:, :, 3] = alpha
+
+        else:
+            raise TypeError(f"assign_alpha_channel expects an ImageObject or np.ndarray yet was passed {type(alpha)}")
+
     def extract_alpha_beta(self, clip_hist_percent=1):
         """
         Extract the alpha and beta of the image
@@ -221,6 +236,12 @@ class ImageObject:
         Convert a four channel alpha image into a three channel image
         """
         return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGRA2BGR), new_image)
+
+    def change_bgr_to_bgra(self, new_image=False):
+        """
+        Convert a three channel alpha image to a four channel image
+        """
+        return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGR2BGRA), new_image)
 
     def change_to_colour(self, new_image=False):
         """
