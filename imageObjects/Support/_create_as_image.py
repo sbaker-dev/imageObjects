@@ -1,8 +1,35 @@
 from imageObjects.ImageObject import ImageObject
 
+from pathlib import Path
 import numpy as np
 import textwrap
 import cv2
+
+
+def load_image(path_to_image, channels_to_load=3):
+    """
+    Loads an image into a cv2 numpy array to be used within an image object
+
+    :param path_to_image: Path to the image you want to load
+    :type path_to_image: str | Path
+
+    :param channels_to_load: Number of channels to load, can take the values of 3 for colour or 4 for png's with alpha.
+    :type channels_to_load: int
+
+    :return: cv2 loaded image of numpy arrays
+    """
+
+    assert Path(path_to_image).exists(), f"Path to image is invalid: {path_to_image}"
+
+    if channels_to_load == 3:
+        return cv2.imread(path_to_image)
+
+    elif channels_to_load == 4:
+        return cv2.imread(path_to_image, cv2.IMREAD_UNCHANGED)
+
+    else:
+        raise IndexError(f"Load image can load images colour (3), or colour with alpha (4), yet was "
+                         f"provided {channels_to_load}")
 
 
 def create_blank(width, height):

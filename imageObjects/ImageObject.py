@@ -216,6 +216,12 @@ class ImageObject:
         """
         return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB), new_image)
 
+    def change_bgra_to_bgr(self, new_image=False):
+        """
+        Convert a four channel alpha image into a three channel image
+        """
+        return self._update_or_export(cv2.cvtColor(self.image, cv2.COLOR_BGRA2BGR), new_image)
+
     def change_to_colour(self, new_image=False):
         """
         Convert image to colour
