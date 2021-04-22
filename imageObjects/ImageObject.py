@@ -523,3 +523,22 @@ class ImageObject:
 
         # 5) Apply the matrix transform on these points lists
         self._update_or_export(cv2.warpPerspective(self.image, matrix, (abs(diff_x), diff_y)), new_image)
+
+    def blur(self, blur_size, new_image=False):
+        """
+        Blur the image
+        """
+
+        self._update_or_export(cv2.blur(self.image, (blur_size, blur_size)), new_image)
+
+    def blur_gaussian(self, blur_size, sig_x=0, sig_y=0, new_image=False):
+        """
+        Blur using gaussian filter
+        """
+        # blur dimension should be odd
+        if (blur_size % 2) == 0:
+            blur_size += 1
+
+        self._update_or_export(cv2.GaussianBlur(self.image, (blur_size, blur_size), sig_x, sigmaY=sig_y), new_image)
+
+
