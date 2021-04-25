@@ -1,5 +1,4 @@
 from imageObjects.Support import *
-from imageObjects.Support import to_vector_2d
 
 from matplotlib import pyplot as plt
 from pathlib import Path
@@ -430,6 +429,33 @@ class ImageObject:
 
         return self._update_or_export(original, new_image)
 
+    def overlay_additive(self, additive_image, new_image=False):
+        """
+        Overlays an image ontop of this image addatively, meaning any pixels in the new image will take precedence over
+        the old one
+
+        :param additive_image: ImageObject to add to this image
+        :type additive_image: ImageObject
+
+        :param new_image: If you want to return a new image or not
+        :type new_image: bool
+        """
+        img_copy = self._create_temp_image()
+
+        # Create an alpha mask of the overlay, then create an inverted copy
+        alpha = additive_image.mask_alpha(True)
+        inv = alpha.invert(True)
+
+        # Isolate the area from the current copy that is not in the mask and vice versa
+        front = cv2.bitwise_and(img_copy, img_copy, mask=inv.image)
+        back = cv2.bitwise_and(additive_image.image, additive_image.image, mask=alpha.image)
+
+        # Then add the areas together and mask them into the copy before updating the new image
+        dst = cv2.add(front, back)
+        img_copy[0:additive_image.height, 0:additive_image.width] = dst
+
+        self._update_or_export(img_copy, new_image)
+
     def extend_bounds(self, uniform=True, size=1, top=1, bottom=1, left=1, right=1, colour=(0, 0, 0), new_image=False):
         """
         This will extend the bounds of the image, if uniform is selected then you only need to adjust size and all
@@ -540,5 +566,6 @@ class ImageObject:
             blur_size += 1
 
         self._update_or_export(cv2.GaussianBlur(self.image, (blur_size, blur_size), sig_x, sigmaY=sig_y), new_image)
+
 
 

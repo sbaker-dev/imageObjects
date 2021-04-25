@@ -1,6 +1,5 @@
 from imageObjects.ContourObject import ContourObject
 
-from skimage.morphology import skeletonize as ski_ske
 from vectorObjects.DefinedVectors import Vector2D
 import cv2
 
@@ -96,13 +95,17 @@ def skeletonize_points(normalised_image, method):
     """
     Extract the points that make up the skeleton of the image via skimage
     """
+    try:
+        from skimage.morphology import skeletonize as ski_ske
 
-    # Extract the binary points
-    binary_points = ski_ske(normalised_image, method=method)
+        # Extract the binary points
+        binary_points = ski_ske(normalised_image, method=method)
 
-    # Return the list of points
-    return [[ci, ri] for ri, row in enumerate(binary_points) for ci, column in enumerate(row) if column]
+        # Return the list of points
+        return [[ci, ri] for ri, row in enumerate(binary_points) for ci, column in enumerate(row) if column]
 
+    except ImportError:
+        raise ImportError("Skeletonise points requires sci-kit images")
 
 def find_contours(gray, retrieval_mode, simple_method=True, hierarchy_return=False):
     """
