@@ -567,5 +567,25 @@ class ImageObject:
 
         self._update_or_export(cv2.GaussianBlur(self.image, (blur_size, blur_size), sig_x, sigmaY=sig_y), new_image)
 
+    def match_on_image(self, match_image, match_type=5):
+        """
+        Match this image to another
+
+        Notes
+        -----
+        See https://docs.opencv.org/master/df/dfb/group__imgproc__object.html#ga3a7850640f1fe1f58fe91a2d7583695d
+        for options of match tpye and mathamaticas behind the matching algoethrim
+
+        :param match_image: ImageObject to match against
+        :type match_image: ImageObject
+
+        :param match_type: cv2 Template match method, defaults to TM_CCOEFF_NORMED
+        :type match_type: int
+
+        :return: Numpy array of row and column ids of match
+        :rtype: np.ndarray
+        """
+        return cv2.matchTemplate(self.image, match_image.image, match_type)
+
 
 
