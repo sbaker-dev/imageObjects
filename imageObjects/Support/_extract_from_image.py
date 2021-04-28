@@ -153,7 +153,7 @@ def find_contours(gray, retrieval_mode, simple_method=True, hierarchy_return=Fal
 def largest_contour(gray):
     """Extract the largest element of the image as a contour"""
     contour_list = find_contours(gray, "external")
-    if len(contour_list) == 0:
+    if not contour_list or len(contour_list) == 0:
         print(f"Warning: No contours found!")
     elif len(contour_list) == 1:
         return contour_list[0]
