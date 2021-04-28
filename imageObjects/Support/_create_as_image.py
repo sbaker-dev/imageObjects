@@ -21,7 +21,10 @@ def load_image(path_to_image, channels_to_load=3):
 
     assert Path(path_to_image).exists(), f"Path to image is invalid: {path_to_image}"
 
-    if channels_to_load == 3:
+    if channels_to_load == 1:
+        return cv2.imread(path_to_image, 0)
+
+    elif channels_to_load == 3:
         return cv2.imread(path_to_image)
 
     elif channels_to_load == 4:
