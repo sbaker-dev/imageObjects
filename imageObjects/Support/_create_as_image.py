@@ -21,6 +21,10 @@ def load_image(path_to_image, channels_to_load=3):
 
     assert Path(path_to_image).exists(), f"Path to image is invalid: {path_to_image}"
 
+    # CV2 doesn't like pathlib
+    if isinstance(path_to_image, Path):
+        path_to_image = str(path_to_image.absolute())
+
     if channels_to_load == 1:
         return cv2.imread(path_to_image, 0)
 
