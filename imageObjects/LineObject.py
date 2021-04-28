@@ -22,7 +22,7 @@ class LineObject:
             self._BLACK = 0
             self._BLACK_BGR = (0, 0, 0)
 
-            if warnings and (cv2.countNonZero(self.img.image) / self.img.pixel_total() > 0.5):
+            if warnings and (cv2.countNonZero(self.img.image) / self.img.pixel_total > 0.5):
                 print("Warning: The number of pixels you are running is more than 50% of the image and may cause "
                       "significant slowdown.\nYou can turn this warning off with warnings=False")
 
