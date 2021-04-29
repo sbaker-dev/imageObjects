@@ -576,8 +576,8 @@ class ImageObject:
         See https://docs.opencv.org/master/df/dfb/group__imgproc__object.html#ga3a7850640f1fe1f58fe91a2d7583695d
         for options of match tpye and mathamaticas behind the matching algoethrim
 
-        :param match_image: ImageObject to match against
-        :type match_image: ImageObject
+        :param match_image: ImageObject to match against or an numpy array
+        :type match_image: ImageObject | np.ndarray
 
         :param match_type: cv2 Template match method, defaults to TM_CCOEFF_NORMED
         :type match_type: int
@@ -585,7 +585,10 @@ class ImageObject:
         :return: Numpy array of row and column ids of match
         :rtype: np.ndarray
         """
-        return cv2.matchTemplate(self.image, match_image.image, match_type)
+        if isinstance(match_image, ImageObject):
+            return cv2.matchTemplate(self.image, match_image.image, match_type)
+        else:
+            return cv2.matchTemplate(self.image, match_image, match_type)
 
 
 
