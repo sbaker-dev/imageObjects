@@ -454,7 +454,7 @@ class ImageObject:
         dst = cv2.add(front, back)
         img_copy[0:additive_image.height, 0:additive_image.width] = dst
 
-        self._update_or_export(img_copy, new_image)
+        return self._update_or_export(img_copy, new_image)
 
     def extend_bounds(self, uniform=True, size=1, top=1, bottom=1, left=1, right=1, colour=(0, 0, 0), new_image=False):
         """
@@ -467,7 +467,7 @@ class ImageObject:
         else:
             output_border = cv2.copyMakeBorder(self.image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=colour)
 
-        self._update_or_export(output_border, new_image)
+        return self._update_or_export(output_border, new_image)
 
     def mask_on_colour_range(self, lower_thresh, upper_thresh, new_image=False):
         """
@@ -548,14 +548,14 @@ class ImageObject:
         matrix = cv2.getPerspectiveTransform(pts1, pts2)
 
         # 5) Apply the matrix transform on these points lists
-        self._update_or_export(cv2.warpPerspective(self.image, matrix, (abs(diff_x), diff_y)), new_image)
+        return self._update_or_export(cv2.warpPerspective(self.image, matrix, (abs(diff_x), diff_y)), new_image)
 
     def blur(self, blur_size, new_image=False):
         """
         Blur the image
         """
 
-        self._update_or_export(cv2.blur(self.image, (blur_size, blur_size)), new_image)
+        return self._update_or_export(cv2.blur(self.image, (blur_size, blur_size)), new_image)
 
     def blur_gaussian(self, blur_size, sig_x=0, sig_y=0, new_image=False):
         """
@@ -565,7 +565,8 @@ class ImageObject:
         if (blur_size % 2) == 0:
             blur_size += 1
 
-        self._update_or_export(cv2.GaussianBlur(self.image, (blur_size, blur_size), sig_x, sigmaY=sig_y), new_image)
+        return self._update_or_export(cv2.GaussianBlur(self.image, (blur_size, blur_size), sig_x, sigmaY=sig_y),
+                                      new_image)
 
     def match_on_image(self, match_image, match_type=5):
         """
@@ -589,6 +590,3 @@ class ImageObject:
             return cv2.matchTemplate(self.image, match_image.image, match_type)
         else:
             return cv2.matchTemplate(self.image, match_image, match_type)
-
-
-
