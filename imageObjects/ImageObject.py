@@ -568,6 +568,25 @@ class ImageObject:
         return self._update_or_export(cv2.GaussianBlur(self.image, (blur_size, blur_size), sig_x, sigmaY=sig_y),
                                       new_image)
 
+    def resize(self, scale, scale_y=None, new_image=False):
+        """
+        Rescale an image by a float representation of a percentage
+
+        :param scale: A float to scale an image by
+        :type scale_y: float
+
+        :param scale_y: An optional float for scaling on y to a different amount of x.
+        :type scale_y: None | float
+
+        :param new_image: If you want to return a new image or not
+        :type new_image: bool
+        """
+
+        if scale_y:
+            self._update_or_export(cv2.resize(self.image, (0, 0), fx=scale, fy=scale_y), new_image)
+        else:
+            self._update_or_export(cv2.resize(self.image, (0, 0), fx=scale, fy=scale), new_image)
+
     def match_on_image(self, match_image, match_type=5):
         """
         Match this image to another
