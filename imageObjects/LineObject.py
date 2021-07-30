@@ -10,7 +10,6 @@ class LineObject:
     def __init__(self, image, target_colour, min_length, mark_colour=180, block_out=None, warnings=True):
         if isinstance(image, ImageObject):
             self.img = image.mask_on_colour_range(target_colour, target_colour, new_image=True)
-            self.lines = None
 
             self._mark = mark_colour
             self._mark_bgr = (mark_colour, mark_colour, mark_colour)
@@ -51,7 +50,7 @@ class LineObject:
 
         # If we want to enlarge the lines a bit, we can do so via drawing them larger via draw_contours.
         if adjacent_pixels:
-            [c.draw_contour(self.img, self._WHITE_BGR, adjacent_pixels) for c in self.img.find_contours("external")]
+            [c.draw_contour(self.img, self._WHITE_BGR, adjacent_pixels) for c in self.img.extract_contours("external")]
 
         # If we want to try to bridge gaps between lines, this method will do so as long as the distance is less than
         # the maximum length provided by the user via fill_gaps_max_length
@@ -78,7 +77,7 @@ class LineObject:
 
         # If we want to enlarge the lines a bit, we can do so via drawing them larger via draw_contours.
         if adjacent_pixels:
-            [c.draw_contour(self.img, self._WHITE_BGR, adjacent_pixels) for c in self.img.find_contours("external")]
+            [c.draw_contour(self.img, self._WHITE_BGR, adjacent_pixels) for c in self.img.extract_contours("external")]
 
         # If we want to try to bridge gaps between lines, this method will do so as long as the distance is less than
         # the maximum length provided by the user via fill_gaps_max_length
