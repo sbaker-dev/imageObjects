@@ -217,10 +217,12 @@ class ContourObject:
 
         """
         [vx, vy, x, y] = cv2.fitLine(self.contour, cv2.DIST_L2, 0, 0.1, 0.01)
-        y_min = int((-x * vy / vx) + y)
-        y_max = int(((image.width - x) * vy / vx) + y)
 
         try:
+            y_min = np.int32(int((-x * vy / vx) + y))
+            y_max = np.int32(int(((image.width - x) * vy / vx) + y))
             cv2.line(image.image, (0, y_min), (image.width - 1, y_max), colour, width)
+            return 0
         except OverflowError:
             print("draw_line_of_best_fit ran into an infinity problem - unable to process")
+            return -1
