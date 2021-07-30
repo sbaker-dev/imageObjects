@@ -28,6 +28,19 @@ class ContourObject:
         """
         return f"Area: {self.area}, Left: {self.left}, Right {self.right}, Top, {self.top}, Bottom {self.bottom}"
 
+    def __add__(self, other):
+        """
+        Add to Contour Objects into a single one
+
+        :param other: Another ContourObject you want to add to this ContourObject
+        :type other: ContourObject
+        :return: A new instance of ContourObject with the two previous elements merged into it
+        :rtype: ContourObject
+        """
+
+        total_elements = [c for c in self.contour] + [c for c in other.contour]
+        return ContourObject(np.array(total_elements))
+
     @property
     def x_list(self):
         """
@@ -200,6 +213,8 @@ class ContourObject:
         Draw a line of best fit on the image
 
         Adapted from: https://stackoverflow.com/questions/14184147/detect-lines-opencv-in-object
+        May be able to better adapt y min and max from: https://www.programmersought.com/article/9474937648/
+
         """
         [vx, vy, x, y] = cv2.fitLine(self.contour, cv2.DIST_L2, 0, 0.1, 0.01)
         y_min = int((-x * vy / vx) + y)
