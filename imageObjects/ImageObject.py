@@ -376,6 +376,30 @@ class ImageObject:
         return self._update_or_export(cv2.rectangle(temp, (top_left.x, top_left.y), (bottom_right.x, bottom_right.y),
                                                     colour, thickness), new_image)
 
+    def draw_poly(self, points, colour, new_image=False):
+        """
+        Draw a polygon on the image using a list of clockwise points
+
+        :param points: A list of lists, where sub lists are the x and y position of each point. The points need to be in
+            a clockwise order
+        :type points: list[list]
+
+        :param colour: BGR colour
+        :type colour: tuple
+
+        :param new_image: If set will return a new image, defaults to false which will update this object.
+        :type new_image: bool
+
+        :return: If new image is set returns image object, else None
+        :rtype: None | ImageObject
+        """
+
+        temp = self._create_temp_image()
+        points = np.array(points, np.int32)
+        points = points.reshape((-1, 1, 2))
+
+        return self._update_or_export(cv2.fillPoly(temp, [points], colour), new_image)
+
     def draw_contour(self, contours, colour, thickness, new_image=False):
         """
         Draws a ContourObjects, or list/tuple of ContourObjects, onto the image
