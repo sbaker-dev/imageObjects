@@ -44,7 +44,7 @@ def create_blank(width, height):
     If the user has not defined anything, they can create a new image of zeros of size width-height
     :rtype: ImageObject
     """
-    return ImageObject(np.zeros((height, width), dtype="float32"))
+    return ImageObject(cv2.cvtColor(np.zeros((width, height), dtype="float32"), cv2.COLOR_GRAY2BGR))
 
 
 def _construct_text_box_image(wrapped_text, font, font_size, font_thickness):
