@@ -41,89 +41,59 @@ class ContourObject:
         total_elements = [c for c in self.contour] + [c for c in other.contour]
         return ContourObject(np.array(total_elements))
 
-    @property
     def x_list(self):
         """
         All x coordinates from each point in the list of points that made up the contour
         """
-        return [cord.x for cord in self.xy_list]
+        return [cord.x for cord in self.xy_list()]
 
-    @property
     def y_list(self):
         """
         All y coordinates from each point in the list of points that made up the contour
         """
-        return [cord.y for cord in self.xy_list]
-
-    @property
-    def min_x(self):
-        """
-        Min x position found in all coordinates
-        """
-        return min(self.x_list)
-
-    @property
-    def max_x(self):
-        """
-        Max x position found in all coordinates
-        """
-        return max(self.x_list)
-
-    @property
-    def min_y(self):
-        """
-        Min y position found in all coordinates
-        """
-        return min(self.y_list)
-
-    @property
-    def max_y(self):
-        """
-        Max y position found in all coordinates
-        """
-        return max(self.y_list)
+        return [cord.y for cord in self.xy_list()]
 
     @property
     def left(self):
         """
         Left most point
         """
-        return Vector2D(self.min_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.min_x]))
+        return self.bound_box_as_vector[1]
 
     @property
     def right(self):
         """
         Right most point
         """
-        return Vector2D(self.max_x, np.mean([cord.y for cord in self.xy_list if cord.x == self.max_x]))
+        return self.bound_box_as_vector[3]
 
     @property
     def top(self):
         """
         Top most point
         """
-        return Vector2D(np.mean([cord.x for cord in self.xy_list if cord.y == self.min_y]), self.min_y)
+        return self.bound_box_as_vector[0]
 
     @property
     def bottom(self):
         """
         Bottom most point
         """
-        return Vector2D(np.mean([cord.x for cord in self.xy_list if cord.y == self.max_y]), self.max_y)
+        return self.bound_box_as_vector[2]
 
     @property
     def width(self):
         """
         The width of a contour calculated as max X minus min X coordinate position
         """
-        return self.max_x - self.min_x
+        return self.right.x - self.left.x
 
     @property
     def height(self):
         """
         The height of a contour calculated as max X minus min X coordinate position
         """
-        return self.max_y - self.min_y
+        return self.bottom.y - self.top.y
 
     @property
     def moments(self):
@@ -144,9 +114,8 @@ class ContourObject:
         """
         The gradient of a contour
         """
-        return [(self.max_y - self.min_y) / self.max_x - self.min_x]
+        return [(self.bottom.y - self.top.y) / self.right.x - self.left.x]
 
-    @property
     def xy_list(self):
         """
         A list of points from the contour in list[Point] type
@@ -166,6 +135,15 @@ class ContourObject:
         y_list = [point[1] for point in cv2.boxPoints(cv2.minAreaRect(self.contour))]
         return [[x, y] for x, y in zip(x_list, y_list)]
 
+    @property
+    def bound_box_as_vector(self):
+        """
+        Bounding box as a vector
+        :return:
+        """
+        top, left, bottom, right = self.bounding_box_points
+        return Vector2D(top, ex=True), Vector2D(left, ex=True), Vector2D(bottom, ex=True), Vector2D(right, ex=True)
+
     def as_polygon(self):
         """
         If working with geo-spatial images, we may wish to return a contour as a polygon. This will return a Shapely
@@ -174,7 +152,7 @@ class ContourObject:
         :return: A shapely Polygon
         :rtype: Polygon
         """
-        xy_list = self.xy_list
+        xy_list = self.xy_list()
         assert len(xy_list) > 3, f"A polygon Requires a minimum of three points yet was passed {len(xy_list)}"
         return Polygon([cord.x, cord.y] for cord in xy_list)
 
