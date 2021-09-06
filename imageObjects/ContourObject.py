@@ -141,7 +141,15 @@ class ContourObject:
         Bounding box as a vector
         :return:
         """
-        top, left, bottom, right = self.bounding_box_points
+        bottom, left, top, right = self.bounding_box_points
+
+        # Box plot is not consistent, so adjust to be the right way round
+        if left[0] > right[0]:
+            left, right = right, left
+
+        if top[1] > bottom[1]:
+            top, bottom = bottom, top
+
         return Vector2D(top, ex=True), Vector2D(left, ex=True), Vector2D(bottom, ex=True), Vector2D(right, ex=True)
 
     def as_polygon(self):
