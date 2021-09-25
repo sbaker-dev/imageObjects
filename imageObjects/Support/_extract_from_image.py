@@ -107,6 +107,7 @@ def skeletonize_points(normalised_image, method):
     except ImportError:
         raise ImportError("Skeletonise points requires sci-kit images")
 
+
 def find_contours(gray, retrieval_mode, simple_method=True, hierarchy_return=False):
     """
     Find contours within the current image. Since find contours only works on mono channel images, if the current
@@ -160,3 +161,12 @@ def largest_contour(gray):
     else:
         area = [c.area for c in contour_list]
         return contour_list[area.index(max(area))]
+
+
+def find_overlap_center(image, masking_image):
+    """Find the centroid of the overlap between two images via masking"""
+    overlap = largest_contour(image.mask_on_image(masking_image, True).image)
+    if not overlap:
+        return None
+    else:
+        return overlap.centroid
