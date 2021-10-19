@@ -150,6 +150,12 @@ class ImageObject:
         """
         return find_contours(self._create_temp_image(False), retrieval_mode, simple_method, hierarchy_return)
 
+    def extract_coloured_coordinates(self, colour):
+        """Extract coloured coordinates as a Vector2D"""
+        # As we are iterating through rows, its y-x rather than x-y that is returned
+        y_list, x_list = np.where(self.image == [colour])
+        return [Vector2D(x, y) for x, y in zip(x_list, y_list)]
+
     def extract_defining_contour(self):
         """
         Extract the largest contour from all contours in the image
@@ -199,13 +205,13 @@ class ImageObject:
         else:
             self.image = image
 
-    def show(self, window_name="Image"):
+    def show(self, window_name="Image", delay=0):
         """
         Show the image and wait for a button to be pressed to continue. Mainly designed for debugging processes
         """
         cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
         cv2.imshow(window_name, self.image)
-        cv2.waitKey()
+        cv2.waitKey(delay)
 
     def notebook_show(self, title="Image"):
         """
