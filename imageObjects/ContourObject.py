@@ -114,7 +114,7 @@ class ContourObject:
         """
         The gradient of a contour
         """
-        return [(self.bottom.y - self.top.y) / self.right.x - self.left.x]
+        return (self.bottom.y - self.top.y) / (self.right.x - self.left.x)
 
     def xy_list(self):
         """
@@ -210,5 +210,21 @@ class ContourObject:
             cv2.line(image.image, (0, y_min), (image.width - 1, y_max), colour, width)
             return 0
         except OverflowError:
+            return self._check_perfect_line(image, colour, width)
+
+    def _check_perfect_line(self, image, colour, width):
+        """A perfectly horizontal or vertical line may lead to Overflow Errors, handle those here."""
+        x_count = list(set(self.x_list()))
+        y_count = list(set(self.y_list()))
+
+        if (len(x_count) != 1) and (len(y_count) != 1):
             print("draw_line_of_best_fit ran into an infinity problem - unable to process")
             return -1
+        elif len(x_count) == 1:
+            cv2.line(image.image, (x_count[0], 0), (x_count[0], image.height), colour, width)
+            return 0
+        else:
+            cv2.line(image.image, (0, y_count[0]), (image.width, y_count[0]), colour, width)
+            return 0
+
+
