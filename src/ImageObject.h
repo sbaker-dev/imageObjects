@@ -1,0 +1,10 @@
+//
+// Created by Samuel on 11/04/2022.
+//
+
+#ifndef IMAGEOBJECTS_IMAGEOBJECT_H
+#define IMAGEOBJECTS_IMAGEOBJECT_H
+
+
+
+#endif //IMAGEOBJECTS_IMAGEOBJECT_H
