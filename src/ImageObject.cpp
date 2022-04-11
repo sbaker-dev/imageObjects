@@ -1,7 +1,3 @@
-//
-// Created by Samuel on 11/04/2022.
-//
-
 #include <opencv2/opencv.hpp>
 #include <utility>
 #include "ImageObject.h"
@@ -29,7 +25,7 @@ int ImageObject::height() {
  * @return The width of the image as an int
  */
 int ImageObject::width() {
-    return image.size().height;
+    return image.size().width;
 }
 
 /**
