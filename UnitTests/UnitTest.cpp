@@ -21,10 +21,12 @@ public:
 
         // Check the dimensions of the image, therefore also checking it has loaded
         testDimensions(img);
+
+        // Test Inversion
+        testInvert(img);
+
         return 0;
     }
-
-
 
 private:
     /**
@@ -33,6 +35,7 @@ private:
      */
     static void testDimensions(ImageObject img){
 
+        // Test Status
         bool failedTest = false;
 
         // Check Width
@@ -47,20 +50,43 @@ private:
             failedTest = true;
         }
 
+        // Validate the these two numbers do correspond to the defined pixel total
         if (img.pixelTotal() != 218120){
-            std::cout << "Expected total pixel count of 218120 yet found " + std::to_string(img.pixelTotal()) << std::endl;
+            std::cout << "Expected total pixel count of 218120 yet found " + std::to_string(img.pixelTotal())
+                << std::endl;
             failedTest = true;
         }
 
-        // Validate Test
+        // Validate result of Test
         if (failedTest){
-            std::cout << "Failed to load originally defined image" << std::endl;
+            std::cout << "\tFailed: Dimensions" << std::endl;
         } else {
-            std::cout << "Loaded originally defined image based on dimensions" << std::endl;
+            std::cout << "Success: Dimensions" << std::endl;
         }
     }
 
+    /**
+     * Invert the image and test the first row matches the known value totals of BGRA
+     * @param img
+     */
+    static void testInvert(ImageObject img){
 
+        // Invert the image as a new instance
+        ImageObject inverted = img.invert(true);
+
+        // Extract the first row and validate that the sum of the rows resulting BGRA Vector 4 is equal to the known
+        // value
+        cv::Scalar_<double> invertTotal = cv::Scalar_<double>(17379, 23935, 26712, 0);
+        cv::Scalar_<double> invertValidate = cv::sum(inverted.extractRow(0));
+
+        // Check status
+        if (invertValidate != invertTotal){
+            std::cout << "\tFailed: Inversion" << std::endl;
+        }
+        else{
+            std::cout << "Success: Inversion" << std::endl;
+        }
+    }
 
 };
 
