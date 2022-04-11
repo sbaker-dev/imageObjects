@@ -16,6 +16,14 @@ public:
 
     int pixelTotal();
 
+    cv::Mat extractRow(int rowIndex);
+
+    cv::Mat extractCol(int colIndex);
+
+    ImageObject updateOrExport(const cv::Mat& img, bool newImage);
+
+    ImageObject invert(bool newImage=false);
+
     void showImage(const std::string & windowName="Window", int delay=0);
 
 };
