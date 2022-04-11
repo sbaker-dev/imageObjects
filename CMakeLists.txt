@@ -9,8 +9,9 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES src/ImageObject.cpp)
+set(SOURCE_FILES src/ImageObject.cpp src/ImageObject.h)
 
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
+# The build executable, needs to be turned into a lib at some point
+add_executable(UnitTesting UnitTests/UnitTest.cpp ${SOURCE_FILES})
 
-target_link_libraries(${CMAKE_PROJECT_NAME} ${OpenCV_LIBS})
+target_link_libraries(UnitTesting ${OpenCV_LIBS})

@@ -7,45 +7,38 @@
 #include "ImageObject.h"
 
 
-class ImageObject{
-public:
-    cv::Mat image;
+/**
+ * Intiliser for Image Object
+ * @param Image A loaded image via cv::imread
+ */
+ImageObject::ImageObject(cv::Mat Image) {
+    image = std::move(Image);
+}
 
-    explicit ImageObject(cv::Mat Image){
-        image = std::move(Image);
-    }
-
-
-    /**
-     * Show the current instance of Image
-     * @param windowName: The name of the window when shown, defaults to Window
-     * @param delay: The delay after which the window closes. If set to zero, which is the default, will wait until
-     *      button pressed
-     */
-    void showImage(const std::string & windowName="Window", int delay=0){
-        cv::imshow(windowName, image);
-        cv::waitKey(delay);
-    }
+/**
+ * Short hand to access the current image instances height
+ * @return The height of the image as an int
+ */
+int ImageObject::height() {
+    return image.size().height;
+}
 
 
+/**
+ * Short hand to access the current image instances width
+ * @return The width of the image as an int
+ */
+int ImageObject::width() {
+    return image.size().height;
+}
 
-
-};
-
-
-
-int main() {
-    std::cout << "Hello, World!" << std::endl;
-
-    ImageObject imgObj = ImageObject(cv::imread("C:/Users/Samuel/Pictures/stopper.jpg"));
-
-
-    imgObj.showImage();
-
-//    cv::Mat srcImage = cv::imread("C:/Users/Samuel/Pictures/stopper.jpg");
-//
-//    cv::imshow("[img]", srcImage);
-//    cv::waitKey(0);
-
-    return 0;
+/**
+ * Show the current instance of Image
+ * @param windowName The name of the window when shown, defaults to Window
+ * @param delay The delay after which the window closes. If set to zero, which is the default, will wait until
+ *      button pressed
+ */
+void ImageObject::showImage(const std::string &windowName, int delay) {
+    cv::imshow(windowName, image);
+    cv::waitKey(delay);
 }
