@@ -38,3 +38,11 @@ void ImageObject::showImage(const std::string &windowName, int delay) {
     cv::imshow(windowName, image);
     cv::waitKey(delay);
 }
+
+/**
+ * The total number of pixels in the image (width * height)
+ * @return The total number of pixels
+ */
+int ImageObject::pixelTotal() {
+    return width() * height();
+}

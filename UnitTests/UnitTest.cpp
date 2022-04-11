@@ -47,6 +47,11 @@ private:
             failedTest = true;
         }
 
+        if (img.pixelTotal() != 218120){
+            std::cout << "Expected total pixel count of 218120 yet found " + std::to_string(img.pixelTotal()) << std::endl;
+            failedTest = true;
+        }
+
         // Validate Test
         if (failedTest){
             std::cout << "Failed to load originally defined image" << std::endl;

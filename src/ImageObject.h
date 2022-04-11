@@ -14,6 +14,8 @@ public:
 
     int width();
 
+    int pixelTotal();
+
     void showImage(const std::string & windowName="Window", int delay=0);
 
 };
