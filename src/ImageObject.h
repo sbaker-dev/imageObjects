@@ -10,6 +10,10 @@ public:
 
     explicit ImageObject(cv::Mat Image);
 
+    ImageObject updateOrExport(const cv::Mat& img, bool newImage);
+
+    void showImage(const std::string & windowName="Window", int delay=0);
+
     int height();
 
     int width();
@@ -18,15 +22,26 @@ public:
 
     int channels();
 
+    int nonZero();
+
+    bool empty();
+
     cv::Mat extractRow(int rowIndex);
 
     cv::Mat extractCol(int colIndex);
 
-    ImageObject updateOrExport(const cv::Mat& img, bool newImage);
+    ImageObject changeBgrToRgb(bool newImage=false);
+
+    ImageObject changeBgraToBgr(bool newImage=false);
+
+    ImageObject changeBgrToBgra(bool newImage=false);
+
+    ImageObject changeToColour(bool newImage=false);
+
+    ImageObject changeToMono(bool newImage=false);
 
     ImageObject invert(bool newImage=false);
 
-    void showImage(const std::string & windowName="Window", int delay=0);
 
 };
 

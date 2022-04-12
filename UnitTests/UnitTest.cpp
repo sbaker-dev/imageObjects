@@ -25,6 +25,9 @@ public:
         // Test Inversion
         testInvert(img);
 
+
+
+
         return 0;
     }
 
@@ -37,6 +40,19 @@ private:
 
         // Test Status
         bool failedTest = false;
+
+        // Validate the image is not empty
+        if (!img.empty()){
+            std::cout << "Expect to find an image, but the image was empty" <<std::endl;
+            failedTest = true;
+        }
+
+        // Check how many pixels are not equal to zero
+        if (img.nonZero() != 218119){
+            std::cout << "Expected to find 218119 non zero pixels yet found" + std::to_string(img.nonZero())
+                << std::endl;
+            failedTest = true;
+        }
 
         // Check Width
         if (img.width() != 574){
@@ -92,8 +108,6 @@ private:
             std::cout << "Success: Inversion" << std::endl;
         }
     }
-
-
 
 };
 
