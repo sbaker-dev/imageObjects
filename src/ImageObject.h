@@ -16,6 +16,8 @@ public:
 
     int pixelTotal();
 
+    int channels();
+
     cv::Mat extractRow(int rowIndex);
 
     cv::Mat extractCol(int colIndex);

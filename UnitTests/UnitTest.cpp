@@ -57,6 +57,11 @@ private:
             failedTest = true;
         }
 
+        if (img.channels() != 3){
+            std::cout << "Expect to find 3 channels yet found " + std::to_string(img.channels()) << std::endl;
+            failedTest = true;
+        }
+
         // Validate result of Test
         if (failedTest){
             std::cout << "\tFailed: Dimensions" << std::endl;
@@ -87,6 +92,8 @@ private:
             std::cout << "Success: Inversion" << std::endl;
         }
     }
+
+
 
 };
 
