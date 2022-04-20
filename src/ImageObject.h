@@ -30,6 +30,8 @@ public:
 
     cv::Mat extractCol(int colIndex);
 
+    std::vector<std::vector<cv::Point>> extractContours(const std::string& retrieval_mode, bool simple_approx=true);
+
     ImageObject changeBgrToRgb(bool newImage=false);
 
     ImageObject changeBgraToBgr(bool newImage=false);
@@ -41,6 +43,9 @@ public:
     ImageObject changeToMono(bool newImage=false);
 
     ImageObject invert(bool newImage=false);
+
+    ImageObject drawContour(const std::vector<std::vector<cv::Point>>& contours, int index, const cv::Scalar& colour,
+            int thickness, bool newImage=false);
 
 
 };

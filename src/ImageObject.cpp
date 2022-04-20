@@ -168,12 +168,79 @@ ImageObject ImageObject::changeToMono(bool newImage) {
  * Invert the current image
  * @param newImage Return a new instance of ImageObject with the inverted image if True, otherwise updates current
  *  instance of image object
- * @return
+ * @return An instance of ImageObject
  */
 ImageObject ImageObject::invert(bool newImage) {
     cv::Mat output;
     cv::bitwise_not(image, output);
     return updateOrExport(output, newImage);
 }
+
+/**
+ * Isolate a vector of contours, with a single contour being a vector of cv::Points, based on a given retrieval mode and
+ * approx method
+ * @param retrieval_mode The type of contour retrieval, takes one of the following values: external, list, ccomp, tree,
+ *  floodfill
+ * @param simple_approx: Simple will only use the extremes that are needed to define a shape, where as if it is turned
+ *  off, all points are kept
+ * @return A Vector of Vectors of Points.
+ */
+std::vector<std::vector<cv::Point>> ImageObject::extractContours(const std::string& retrieval_mode, bool simple_approx) {
+    cv::Mat extractImage;
+    std::vector<std::vector<cv::Point> > contours;
+    std::vector<cv::Vec4i> hierarchy;
+
+    // TODO: We probably want a static method for creating temp images of a given channel depth
+    if (channels() != 1){
+        extractImage = changeToMono(true).image;
+    }
+    else{
+        extractImage = image.clone();
+    }
+
+    // Determine if we are using CHAIN_APPROX_SIMPLE or CHAIN_APPROX_NONE
+    int approx;
+    if (simple_approx){
+        approx = 2;
+    } else{
+        approx = 1;
+    }
+
+    // Remap string to int
+    std::map<std::string, int> retrieval;
+    retrieval["external"] = 0;
+    retrieval["list"] = 1;
+    retrieval["ccomp"] = 2;
+    retrieval["tree"] = 3;
+    retrieval["floodfill"] = 4;
+
+    //
+    if (retrieval.count(retrieval_mode) == 0){
+        std::cout << "We failed to find a given retrieval mode for " << retrieval_mode << std::endl;
+    } else {
+        int mode = retrieval[retrieval_mode];
+        cv::findContours(extractImage, contours, hierarchy, mode, approx);
+    }
+
+    // TODO: We need to allow for returning the hierarchy?
+    return contours;
+}
+
+/**
+ * Draw a given contour on the image
+ * @param contours Extract contours from an image
+ * @param index The index position you want to draw, -1 if you want to draw all of them
+ * @param thickness The thickness of the contour, -1 if you want to fill
+ * @param newImage If you want to draw on current image or return a new instance
+ * @return An instance of ImageObject
+ */
+ImageObject ImageObject::drawContour(const std::vector<std::vector<cv::Point>>& contours, int index,
+        const cv::Scalar& colour, int thickness, bool newImage) {
+
+    cv::Mat output = image.clone();
+    cv::drawContours(output, contours, index, colour, thickness);
+    return updateOrExport(output, newImage);
+}
+
 
 

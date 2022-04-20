@@ -1,4 +1,6 @@
 #include "../src/ImageObject.h"
+
+#include "opencv2/core/utils/logger.hpp"
 #include <opencv2/opencv.hpp>
 #include <stdexcept>
 #include <iostream>
@@ -24,6 +26,8 @@ public:
 
         // Test Inversion
         testInvert(img);
+
+        testContours(img);
 
 
 
@@ -109,11 +113,60 @@ private:
         }
     }
 
+    /**
+     * Test contour functionality
+     * @param img
+     */
+    static void testContours(ImageObject img){
+
+        // Test Status
+        bool failedTest = false;
+
+        // Extract the contours
+        std::vector<std::vector<cv::Point>> contours = img.extractContours("external");
+
+        // Check the values of each contour in the vector is equal to a known value
+        for(const auto& value: contours) {
+            if (value[0] != cv::Point(0, 0)){
+                std::cout << "First point failed" << std::endl;
+                failedTest = true;
+            }
+            if (value[1] != cv::Point(0, 379)){
+                std::cout << "Second point failed" << std::endl;
+                failedTest = true;
+            }
+            if (value[2] != cv::Point(573, 379)){
+                std::cout << "Third point failed" << std::endl;
+                failedTest = true;
+            }
+            if (value[3] != cv::Point(573, 0)){
+                std::cout << "Forth point failed" << std::endl;
+                failedTest = true;
+            }
+        }
+
+        // Test Draw contour
+        img.drawContour(contours, -1, cv::Scalar(0, 255, 0), 2, true);
+
+        // Validate result of Test
+        if (failedTest){
+            std::cout << "\tFailed: Contours" << std::endl;
+        } else {
+            std::cout << "Success: Contours" << std::endl;
+        }
+
+    }
+
 };
 
 
 
 int main(){
+
+    // Silence the CV log
+    cv::utils::logging::setLogLevel(cv::utils::logging::LogLevel::LOG_LEVEL_SILENT);
+
+    // Start the testing
     std::cout << "Starting Test Frame work" << std::endl;
 
     // Redefine relative to your build directory
