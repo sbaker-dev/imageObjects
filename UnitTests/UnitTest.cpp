@@ -33,6 +33,9 @@ public:
         // Test Thresh-holding
         testThreshold(img);
 
+        // Test Masking
+        testMasking(img);
+
 
 
 
@@ -161,6 +164,10 @@ private:
 
     }
 
+    /**
+     * Test thresh holding of a given image
+     * @param img
+     */
     static void testThreshold(ImageObject img){
 
         // Create an image for binary checking
@@ -196,6 +203,31 @@ private:
         }
         else{
             std::cout << "Success: Adaptive Inversion" << std::endl;
+        }
+
+    }
+
+    /**
+     * Test the masking of a given image
+     * @param img
+     */
+    static void testMasking(ImageObject img){
+
+        ImageObject colourMask = img.maskOnColourRange(cv::Scalar(110, 150, 110, 0),
+                cv::Scalar(255, 200, 150, 0), true);
+
+
+        // Extract the first col and validate that the sum of the rows resulting BGRA Vector 4 is equal to the known
+        // value
+        cv::Scalar_<double> colourMaskTotal = cv::Scalar_<double>(9435, 0, 0, 0);
+        cv::Scalar_<double> colourMaskValidate = cv::sum(colourMask.extractCol(0));
+
+        // Check status
+        if (colourMaskValidate != colourMaskTotal){
+            std::cout << "\tFailed: Colour Mask" << std::endl;
+        }
+        else{
+            std::cout << "Success: Colour Mask" << std::endl;
         }
 
     }

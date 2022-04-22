@@ -54,6 +54,8 @@ public:
             const std::string& binaryMode = "binary", int neighborhoodSize=51, int subtractConstant=20,
             bool newImage=false);
 
+    ImageObject maskOnColourRange(const cv::Scalar& lowerThresh, const cv::Scalar& upperThresh, bool newImage=false);
+
 
 };
 

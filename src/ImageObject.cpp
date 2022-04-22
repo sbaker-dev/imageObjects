@@ -242,6 +242,14 @@ ImageObject ImageObject::drawContour(const std::vector<std::vector<cv::Point>>& 
     return updateOrExport(output, newImage);
 }
 
+/**
+ * Threshold Binary a given image
+ * @param binaryThreshold The level of thresh holding
+ * @param binaryMode Mode of thresh holding
+ * @param binaryMax maximum cap value for thresh holding
+ * @param newImage new image or not
+ * @return
+ */
 ImageObject ImageObject::thresholdBinary(int binaryThreshold, const std::string &binaryMode, int binaryMax,
                                          bool newImage) {
 
@@ -265,7 +273,16 @@ ImageObject ImageObject::thresholdBinary(int binaryThreshold, const std::string 
     return updateOrExport(output, newImage);
 }
 
-
+/**
+ * This will apply by default a gaussian adaptive threshold using the binary method
+ * @param assignmentValue Pixels threshold for acceptance of pixels
+ * @param gaussianAdaptive Adaptive thresholding mode (Gaussian or mean)
+ * @param binaryMode binary thresholding value
+ * @param neighborhoodSize Size of a pixel neighborhood that is used to calculate a threshold value for the pixel
+ * @param subtractConstant Constant subtracted from the mean or weighted mean
+ * @param newImage
+ * @return
+ */
 ImageObject ImageObject::thresholdAdaptive(int assignmentValue, bool gaussianAdaptive, const std::string &binaryMode,
                                            int neighborhoodSize, int subtractConstant, bool newImage) {
 
@@ -296,6 +313,20 @@ ImageObject ImageObject::thresholdAdaptive(int assignmentValue, bool gaussianAda
         cv::adaptiveThreshold(image, output, assignmentValue, adaptiveMode, mode, neighborhoodSize,
                 subtractConstant);
     }
+    return updateOrExport(output, newImage);
+}
+
+/**
+ * Isolate elements based on a bgr range
+ * @param lowerThresh lower bgra range
+ * @param upperThresh upper bgra range
+ * @param newImage new image or not
+ * @return
+ */
+ImageObject ImageObject::maskOnColourRange(const cv::Scalar& lowerThresh, const cv::Scalar& upperThresh,
+        bool newImage) {
+    cv::Mat output;
+    cv::inRange(image, lowerThresh, upperThresh, output);
     return updateOrExport(output, newImage);
 }
 
