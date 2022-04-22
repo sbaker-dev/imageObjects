@@ -27,7 +27,11 @@ public:
         // Test Inversion
         testInvert(img);
 
+        // Test Contours
         testContours(img);
+
+        // Test Thresh-holding
+        testThreshold(img);
 
 
 
@@ -153,6 +157,45 @@ private:
             std::cout << "\tFailed: Contours" << std::endl;
         } else {
             std::cout << "Success: Contours" << std::endl;
+        }
+
+    }
+
+    static void testThreshold(ImageObject img){
+
+        // Create an image for binary checking
+        ImageObject binary = img.changeToMono(true);
+        binary.thresholdBinary(100);
+
+        // Extract the first row and validate that the sum of the rows resulting BGRA Vector 4 is equal to the known
+        // value
+        cv::Scalar_<double> thresholdTotal = cv::Scalar_<double>(146370, 0, 0, 0);
+        cv::Scalar_<double> thresholdValidate = cv::sum(binary.extractRow(0));
+
+        // Check status
+        if (thresholdValidate != thresholdTotal){
+            std::cout << "\tFailed: Binary Inversion" << std::endl;
+        }
+        else{
+            std::cout << "Success: Binary Inversion" << std::endl;
+        }
+
+
+        // Create an image for adaptive threshold checking
+        ImageObject adaptive = img.changeToMono(true);
+        adaptive.thresholdAdaptive();
+
+        // Extract the first col and validate that the sum of the rows resulting BGRA Vector 4 is equal to the known
+        // value
+        cv::Scalar_<double> adaptiveThresholdTotal = cv::Scalar_<double>(87210, 0, 0, 0);
+        cv::Scalar_<double> adaptiveThresholdValidate = cv::sum(adaptive.extractCol(0));
+
+        // Check status
+        if (adaptiveThresholdValidate != adaptiveThresholdTotal){
+            std::cout << "\tFailed: Adaptive Inversion" << std::endl;
+        }
+        else{
+            std::cout << "Success: Adaptive Inversion" << std::endl;
         }
 
     }

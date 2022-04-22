@@ -242,5 +242,66 @@ ImageObject ImageObject::drawContour(const std::vector<std::vector<cv::Point>>& 
     return updateOrExport(output, newImage);
 }
 
+ImageObject ImageObject::thresholdBinary(int binaryThreshold, const std::string &binaryMode, int binaryMax,
+                                         bool newImage) {
+
+    cv::Mat output;
+
+    // Remap string to int
+    std::map<std::string, int> retrieval;
+    retrieval["binary"] = 0;
+    retrieval["binary_inv"] = 1;
+    retrieval["trunc"] = 2;
+    retrieval["to_zero"] = 3;
+    retrieval["to_zero_inv"] = 4;
+
+    // Binary threshold the image
+    if (retrieval.count(binaryMode) == 0){
+        std::cout << "We failed to find a given retrieval mode for " << binaryMode << std::endl;
+    } else {
+        int mode = retrieval[binaryMode];
+        cv::threshold(image, output, binaryThreshold, binaryMax, mode);
+    }
+    return updateOrExport(output, newImage);
+}
+
+
+ImageObject ImageObject::thresholdAdaptive(int assignmentValue, bool gaussianAdaptive, const std::string &binaryMode,
+                                           int neighborhoodSize, int subtractConstant, bool newImage) {
+
+    //
+    cv::Mat output;
+
+    // Remap string to int
+    std::map<std::string, int> retrieval;
+    retrieval["binary"] = 0;
+    retrieval["binary_inv"] = 1;
+    retrieval["trunc"] = 2;
+    retrieval["to_zero"] = 3;
+    retrieval["to_zero_inv"] = 4;
+
+    // Set the adaptiveMode
+    int adaptiveMode;
+    if (gaussianAdaptive){
+        adaptiveMode = 1;
+    } else{
+        adaptiveMode = 0;
+    }
+
+    // Binary threshold the image
+    if (retrieval.count(binaryMode) == 0){
+        std::cout << "We failed to find a given retrieval mode for " << binaryMode << std::endl;
+    } else {
+        int mode = retrieval[binaryMode];
+        cv::adaptiveThreshold(image, output, assignmentValue, adaptiveMode, mode, neighborhoodSize,
+                subtractConstant);
+    }
+    return updateOrExport(output, newImage);
+}
+
+
+
+
+
 
 

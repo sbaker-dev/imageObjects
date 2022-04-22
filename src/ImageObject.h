@@ -47,6 +47,13 @@ public:
     ImageObject drawContour(const std::vector<std::vector<cv::Point>>& contours, int index, const cv::Scalar& colour,
             int thickness, bool newImage=false);
 
+    ImageObject thresholdBinary(int binaryThreshold, const std::string& binaryMode = "binary", int binaryMax=255,
+            bool newImage=false);
+
+    ImageObject thresholdAdaptive(int assignmentValue=255, bool gaussianAdaptive=true,
+            const std::string& binaryMode = "binary", int neighborhoodSize=51, int subtractConstant=20,
+            bool newImage=false);
+
 
 };
 
