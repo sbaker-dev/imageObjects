@@ -295,6 +295,18 @@ class ImageObject:
         """
         return self._update_or_export(cv2.bitwise_not(self.image), new_image)
 
+    def flip_vertical(self, new_image=False):
+        """
+        Flip Image vertically
+        """
+        return self._update_or_export(cv2.flip(self.image, 0), new_image)
+
+    def flip_horizontal(self, new_image=False):
+        """
+        Flip Image Horizontally
+        """
+        return self._update_or_export(cv2.flip(self.image, 1), new_image)
+
     def normalise(self, new_image=False):
         """
         Use Cv2 normalize to set all images to be 0's or 1's.
