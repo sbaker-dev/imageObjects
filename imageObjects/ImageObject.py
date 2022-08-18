@@ -224,11 +224,19 @@ class ImageObject:
         plt.title(title)
         plt.show()
 
-    def write_to_file(self, directory, name, write_type="png"):
+    def write_to_file(self, directory, name, write_type="png", compression=0):
         """
-        Write the image called 'name', to a 'directory', of type 'write_type'
+        Write the image called 'name', to a 'directory', of type 'write_type'.
+
+        Compression
+        If using jpg, then the quality is 0-100, with 100 being the best and 0 the worse
+        If using png, then 0 is the best and 9 is the worst
         """
-        cv2.imwrite(str(Path(directory, f"{name}.{write_type}").absolute()), self.image)
+        if write_type == "png":
+            comp = [cv2.IMWRITE_PNG_COMPRESSION, compression]
+        else:
+            comp = [cv2.IMWRITE_JPEG_QUALITY, compression]
+        cv2.imwrite(str(Path(directory, f"{name}.{write_type}").absolute()), self.image, comp)
 
     def change_bgr_to_rgb(self, new_image=False):
         """
