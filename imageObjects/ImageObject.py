@@ -229,13 +229,17 @@ class ImageObject:
         Write the image called 'name', to a 'directory', of type 'write_type'.
 
         Compression
-        If using jpg, then the quality is 0-100, with 100 being the best and 0 the worse
+        If using jpg or webp, then the quality is 0-100, with 100 being the best and 0 the worse
         If using png, then 0 is the best and 9 is the worst
         """
         if write_type == "png":
             comp = [cv2.IMWRITE_PNG_COMPRESSION, compression]
-        else:
+        elif write_type == "jpg":
             comp = [cv2.IMWRITE_JPEG_QUALITY, compression]
+        elif write_type == "webp":
+            comp = [cv2.IMWRITE_WEBP_QUALITY, compression]
+        else:
+            raise Exception(f"Unexpected file format of {write_type} found")
         cv2.imwrite(str(Path(directory, f"{name}.{write_type}").absolute()), self.image, comp)
 
     def change_bgr_to_rgb(self, new_image=False):
