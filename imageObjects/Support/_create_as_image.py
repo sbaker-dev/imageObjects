@@ -44,7 +44,7 @@ def create_blank(width, height):
     If the user has not defined anything, they can create a new image of zeros of size width-height
     :rtype: ImageObject
     """
-    return ImageObject(np.zeros((width, height), dtype=np.uint8))
+    return ImageObject(np.zeros((height, width), dtype=np.uint8))
 
 
 def _construct_text_box_image(wrapped_text, font, font_size, font_thickness):
